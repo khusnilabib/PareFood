@@ -1,0 +1,80 @@
+name: parefood_platform
+description: >-
+  PareFood Platform monorepo workspace root (Phase 3 foundation). Private;
+  never published to pub.dev (MO-R04).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+# Pub workspace (melos 8). Members declare `resolution: workspace`.
+# NOTE: add `apps/*` back as soon as the first app exists — pub requires every
+# glob to match a package.
+workspace:
+  - packages/*
+  - packages/features/*
+
+dev_dependencies:
+  flutter_lints: any
+  glob: any
+  melos: ^8.2.2
+  yaml: any
+
+melos:
+  command:
+    clean:
+      hooks:
+        pre: dart run tool/scripts/clean.dart
+    version:
+      hooks:
+        post: dart run tool/scripts/sync_version.dart
+  scripts:
+    codegen:
+      # Single line: melos executes scripts via `cmd.exe /C` on Windows,
+      # where newlines and `\` continuations do not chain commands.
+      run: dart run melos exec --dir-exists=build.yaml --concurrency=1 -- dart run build_runner build --delete-conflicting-outputs
+      description: >-
+        Run build_runner (Freezed / json_serializable / drift) in every package
+        that defines a build.yaml. Generated files are committed (FL-R06).
+
+    analyze:
+      run: dart run melos exec -- dart analyze --fatal-warnings .
+      description: Analyze all packages (CS-R01). Fails on any error or warning.
+
+    format:
+      run: dart run melos exec -- dart format --output=none --set-exit-if-changed .
+      description: Check formatting across all packages (CS-R01). Reports files that differ.
+
+    format:fix:
+      run: dart run melos exec -- dart format .
+      description: Apply dart format to all packages.
+
+    deps-check:
+      run: dart run tool/dependency_check/bin/dependency_check.dart
+      description: >-
+        Enforce package boundaries (MO-R02): no supabase_flutter/dio outside
+        data, no Flutter imports in core, no intra-app imports.
+
+    check:
+      # Single `&&` chain: melos runs scripts via `cmd.exe /C` on Windows,
+      # which only executes the first line of a multi-line block.
+      run: dart run melos run format && dart run melos run analyze && dart run melos run deps-check && dart run melos test
+      description: Local pre-push gate mirroring pr-validation (PF-DOC-21 §3.2).
+
+    bootstrap:check:
+      run: dart run melos run codegen && dart run tool/scripts/codegen_diff.dart
+      description: Regenerate code and fail if the working tree is dirty (FL-R06).
+
+    db-test:
+      run: cd backend/supabase && supabase test db
+      description: >-
+        Run the pgTAP policy tests (B7, PF-DOC-20 §3.4) against the local
+        Supabase stack. Requires Docker; run `supabase start` in
+        backend/supabase first. Not part of `check` (Docker not mandatory).
+
+    db-reset:
+      run: cd backend/supabase && supabase db reset
+      description: >-
+        Reapply migrations and seed the local database (dev/test harness).
+        Requires Docker; run `supabase start` in backend/supabase first.
