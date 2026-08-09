@@ -1,0 +1,45 @@
+name: Database tests (pgTAP)
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  db-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node (for supabase CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install supabase CLI
+        run: npm install -g supabase
+
+      - name: Start Supabase local
+        run: |
+          cd backend/supabase || exit 1
+          supabase start --yes
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Wait for DB to be ready
+        run: sleep 10
+
+      - name: Run pgTAP database tests
+        run: |
+          cd backend/supabase || exit 1
+          supabase test db ./tests/database --local --workdir . --yes
+
+      - name: Stop Supabase
+        if: always()
+        run: |
+          cd backend/supabase || exit 1
+          supabase stop --yes
