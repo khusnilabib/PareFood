@@ -1,0 +1,33 @@
+name: menu_feature
+description: >-
+  PareFood menu feature: category/item CRUD, availability toggling and CSV
+  import (FR-MENU-001/002/003). Repositories delegate to pare_data.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dependencies:
+  file_picker: ^8.1.2
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.3.2
+  pare_core:
+    path: ../../core
+  pare_data:
+    path: ../../data
+  pare_design:
+    path: ../../design
+  pare_util:
+    path: ../../util
+
+dev_dependencies:
+  flutter_lints: any
+  flutter_test:
+    sdk: flutter
+  test: any
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,26 @@
+name: pare_design
+description: >-
+  PareFood design system: Material 3 tokens, themes and Pf* widgets shared by
+  all four apps (PF-DOC-16). No business logic, no networking.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  pare_core:
+    path: ../core
+  pare_util:
+    path: ../util
+
+dev_dependencies:
+  flutter_lints: any
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

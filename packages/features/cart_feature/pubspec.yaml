@@ -1,0 +1,29 @@
+name: cart_feature
+description: >-
+  PareFood cart feature: client-side cart state, quantity rules and cart
+  screen (PF-DOC-11 §3.1). Local-first; persistence lands via CartStore (drift).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.3.2
+  pare_core:
+    path: ../../core
+  pare_design:
+    path: ../../design
+  pare_util:
+    path: ../../util
+
+dev_dependencies:
+  flutter_lints: any
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

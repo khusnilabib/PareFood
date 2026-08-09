@@ -1,0 +1,32 @@
+name: profile_feature
+description: >-
+  PareFood profile feature: user profile view/edit and validation
+  (PF-DOC-11 §3.1). Repositories delegate to pare_data.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.3.2
+  image_picker: ^1.2.0
+  pare_core:
+    path: ../../core
+  pare_data:
+    path: ../../data
+  pare_design:
+    path: ../../design
+  pare_util:
+    path: ../../util
+
+dev_dependencies:
+  flutter_lints: any
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

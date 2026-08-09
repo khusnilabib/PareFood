@@ -1,0 +1,14 @@
+name: pare_util
+description: >-
+  PareFood util package: pure helpers, formatters and validators. No domain
+  knowledge, no Flutter, no network (PF-DOC-10 §3.2).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dev_dependencies:
+  flutter_lints: any
+  test: any

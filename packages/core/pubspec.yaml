@@ -1,0 +1,21 @@
+name: pare_core
+description: >-
+  PareFood core package: pure domain models, value objects, exceptions and sealed
+  result types. No Flutter, no network, no Supabase SDK (PF-DOC-10 §3.2).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dev_dependencies:
+  build_runner: any
+  flutter_lints: any
+  freezed: any
+  json_serializable: any
+  test: any
+dependencies:
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
+  meta: ^1.17.0

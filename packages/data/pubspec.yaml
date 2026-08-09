@@ -1,0 +1,32 @@
+name: pare_data
+description: >-
+  PareFood data package: environment config, Supabase client bootstrap, Dio
+  networking and the exception mapper. No widgets, no business decisions
+  (PF-DOC-10 §3.2).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dependencies:
+  dio: ^5.11.0
+  flutter:
+    sdk: flutter
+  meta: ^1.17.0
+  pare_core:
+    path: ../core
+  pare_util:
+    path: ../util
+  supabase_flutter: ^2.17.1
+
+dev_dependencies:
+  flutter_lints: any
+  flutter_test:
+    sdk: flutter
+  http: ^1.6.0
+  test: any
+
+flutter:
+  uses-material-design: false
