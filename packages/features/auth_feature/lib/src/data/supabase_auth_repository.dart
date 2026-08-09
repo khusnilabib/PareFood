@@ -75,6 +75,11 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<void> signOut() => _dataSource.signOut();
 
   AuthSession _toSession(AuthSessionDto dto) {
-    return AuthSession(userId: dto.userId, email: dto.email, phone: dto.phone);
+    return AuthSession(
+      userId: dto.userId,
+      email: dto.email,
+      phone: dto.phone,
+      role: dto.role,
+    );
   }
 }

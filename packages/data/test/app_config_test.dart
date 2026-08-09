@@ -2,6 +2,25 @@ import 'package:pare_data/pare_data.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('parsePareEnvironment', () {
+    test('maps known names', () {
+      expect(parsePareEnvironment('dev'), PareEnvironment.dev);
+      expect(parsePareEnvironment('staging'), PareEnvironment.staging);
+      expect(parsePareEnvironment('production'), PareEnvironment.production);
+      expect(parsePareEnvironment('prod'), PareEnvironment.production);
+    });
+
+    test('is case-insensitive and trims whitespace', () {
+      expect(parsePareEnvironment('  STAGING '), PareEnvironment.staging);
+      expect(parsePareEnvironment('Production'), PareEnvironment.production);
+    });
+
+    test('falls back to dev for unknown or empty values', () {
+      expect(parsePareEnvironment(''), PareEnvironment.dev);
+      expect(parsePareEnvironment('uat'), PareEnvironment.dev);
+    });
+  });
+
   group('PareEnvironmentX', () {
     test('exposes stable names', () {
       expect(PareEnvironment.dev.name, 'dev');

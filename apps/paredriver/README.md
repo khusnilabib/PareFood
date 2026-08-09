@@ -1,0 +1,45 @@
+# app_paredriver
+
+PareDriver courier app — thin composition root (MO-R06, PF-DOC-06).
+
+Sprint 1 scope: auth screens and the driver profile behind an auth-guarded
+router (PF-DOC-17). Delivery flows (order feed, delivery tracking, earnings)
+arrive with Sprint 2. No business logic lives here; screens come from
+`packages/features/*`, data access goes through `pare_data` (DEP-R06) and
+theming through `pare_design`.
+
+## Run
+
+```sh
+flutter run
+```
+
+Configuration is injected with `--dart-define` (dev defaults apply when a
+value is omitted, so a bare `flutter run` works):
+
+```sh
+flutter run \
+  --dart-define=PARE_ENV=dev \
+  --dart-define=SUPABASE_URL=https://<project>.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY=<anon key> \
+  --dart-define=API_BASE_URL=https://<project>.supabase.co/rest/v1
+```
+
+## Layout
+
+| Path | Responsibility |
+| --- | --- |
+| `lib/main.dart` | Bootstrap: defines → `AppConfig` → Supabase → `ProviderScope`. |
+| `lib/src/config/env.dart` | Pure `--dart-define` → `AppConfig` mapping. |
+| `lib/src/router/app_router.dart` | GoRouter + auth guards (PF-DOC-17). |
+| `lib/src/shell/driver_shell.dart` | Sprint 1 shell (profile only). |
+| `lib/src/app.dart` | `MaterialApp.router` + `AppTheme`. |
+
+## Tests
+
+```sh
+flutter test
+```
+
+Guard-redirect and shell smoke tests run hermetically against fake
+repositories (TS-R06 — no network, no Supabase).

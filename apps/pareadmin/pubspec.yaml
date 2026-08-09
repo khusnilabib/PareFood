@@ -1,0 +1,31 @@
+name: app_pareadmin
+description: >-
+  PareAdmin web console — Sprint 1 composition root (MO-R06): role-guarded
+  login and a placeholder dashboard; admin tooling arrives in Sprint 4. Thin
+  wiring over feature packages.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dependencies:
+  auth_feature:
+    path: ../../packages/features/auth_feature
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.3.2
+  go_router: ^17.4.0
+  pare_data:
+    path: ../../packages/data
+  pare_design:
+    path: ../../packages/design
+
+dev_dependencies:
+  flutter_lints: any
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

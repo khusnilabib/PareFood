@@ -1,0 +1,2 @@
+# Workspace-wide analyzer/lint configuration lives at the repo root (CS-R01).
+include: ../../analysis_options.yaml

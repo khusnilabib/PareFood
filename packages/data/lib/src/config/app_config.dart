@@ -7,6 +7,18 @@ library;
 /// Deployment environment.
 enum PareEnvironment { dev, staging, production }
 
+/// Parses a `--dart-define` environment name into a [PareEnvironment].
+///
+/// Unknown or empty values fall back to [PareEnvironment.dev] so a missing
+/// define never blocks local development (DEP-R06).
+PareEnvironment parsePareEnvironment(String name) {
+  return switch (name.trim().toLowerCase()) {
+    'staging' => PareEnvironment.staging,
+    'production' || 'prod' => PareEnvironment.production,
+    _ => PareEnvironment.dev,
+  };
+}
+
 extension PareEnvironmentX on PareEnvironment {
   String get name => switch (this) {
     PareEnvironment.dev => 'dev',

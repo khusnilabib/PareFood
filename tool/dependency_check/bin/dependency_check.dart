@@ -66,11 +66,8 @@ void main() {
       }
 
       if (relative.startsWith('apps${Platform.pathSeparator}')) {
-        final appDeps = dependencies.where(
-          (dep) => dep.startsWith('pare_') && dep != 'pare_platform',
-        );
-        for (final dep in appDeps) {
-          if (dep.startsWith('app_')) {
+        for (final dep in dependencies) {
+          if (dep.startsWith('app_') && dep != name) {
             violations.add('$name ($relative) depends on another app $dep (MO-R02e).');
           }
         }

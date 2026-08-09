@@ -38,21 +38,25 @@ FileCoverage parseLcovFile(List<String> lines) {
 const _excludedPaths = {'lib/src/tokens/pf_colors.dart'};
 
 void main() {
-  final root = Directory('packages');
   final packages = <PkgCoverage>[];
   final uncoveredFiles = <String>[];
   var grandFound = 0, grandHit = 0;
 
-  final pkgDirs = <String>[
-    for (final e in root.listSync().whereType<Directory>()) e.path,
-    for (final features
-        in root
-            .listSync()
-            .whereType<Directory>()
-            .where((d) => d.path.endsWith('features'))
-            .expand((d) => d.listSync().whereType<Directory>()))
-      features.path,
-  ];
+  final pkgDirs = <String>[];
+  for (final base in const <String>['packages', 'apps']) {
+    final root = Directory(base);
+    if (!root.existsSync()) continue;
+    pkgDirs.addAll(root.listSync().whereType<Directory>().map((d) => d.path));
+    // Feature packages live one level deeper: packages/features/<feature>.
+    for (final features in root
+        .listSync()
+        .whereType<Directory>()
+        .where((d) => d.path.endsWith('features'))) {
+      pkgDirs.addAll(
+        features.listSync().whereType<Directory>().map((d) => d.path),
+      );
+    }
+  }
 
   for (final dir in pkgDirs) {
     // Normalise to forward slashes so target lookups work on Windows too.
@@ -86,6 +90,7 @@ void main() {
     'packages/util': 90,
     'packages/design': 75,
     'packages/features': 75,
+    'apps': 60, // PF-DOC-20 §3.8: composition roots carry a lower gate.
   };
 
   final headers =
@@ -95,6 +100,8 @@ void main() {
     final short = p.name.replaceFirst('packages/', '');
     final t = p.name.startsWith('packages/features')
         ? 75
+        : p.name.startsWith('apps/')
+        ? target['apps']!
         : (target[p.name] ?? 0);
     final met = t > 0 ? (p.pct >= t ? 'YES' : 'NO ') : 'n/a';
     rows.add(

@@ -31,6 +31,21 @@ void main() {
       expect(a == d, isFalse);
       expect(a.hashCode, b.hashCode);
     });
+
+    test('defaults role to customer and supports role guards', () {
+      const customer = AuthSession(userId: 'u1', email: 'a@b.com');
+      expect(customer.role, 'customer');
+      expect(customer.hasRole('customer'), isTrue);
+      expect(customer.hasRole('business'), isFalse);
+
+      const merchant = AuthSession(
+        userId: 'u1',
+        email: 'a@b.com',
+        role: 'business',
+      );
+      expect(merchant.hasRole('business'), isTrue);
+      expect(customer == merchant, isFalse);
+    });
   });
 
   group('SignInWithEmail', () {
@@ -232,6 +247,17 @@ void main() {
         isA<RequestPasswordReset>(),
       );
     });
+
+    test('signOutProvider ends the session via the repository', () async {
+      final repo = _FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repo)],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(signOutProvider)();
+      expect(repo.signOutCount, 1);
+    });
   });
 }
 
@@ -248,6 +274,7 @@ class _FakeAuthRepository implements AuthRepository {
   String? otpPhone;
   String? verifyPhone;
   String? verifyToken;
+  int signOutCount = 0;
 
   void emit(AuthSession? session) => _controller.add(session);
 
@@ -292,5 +319,7 @@ class _FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> signOut() async {}
+  Future<void> signOut() async {
+    signOutCount++;
+  }
 }

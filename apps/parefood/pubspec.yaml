@@ -1,0 +1,34 @@
+name: app_parefood
+description: >-
+  PareFood customer app — Sprint 1 composition root (MO-R06): auth shell,
+  restaurant discovery and profile. Thin wiring over feature packages.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dependencies:
+  auth_feature:
+    path: ../../packages/features/auth_feature
+  discovery_feature:
+    path: ../../packages/features/discovery_feature
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.3.2
+  go_router: ^17.4.0
+  pare_data:
+    path: ../../packages/data
+  pare_design:
+    path: ../../packages/design
+  profile_feature:
+    path: ../../packages/features/profile_feature
+
+dev_dependencies:
+  flutter_lints: any
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

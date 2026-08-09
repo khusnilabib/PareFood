@@ -44,3 +44,9 @@ final verifyPhoneOtpProvider = Provider<VerifyPhoneOtp>((ref) {
 final requestPasswordResetProvider = Provider<RequestPasswordReset>((ref) {
   return RequestPasswordReset(ref.watch(authRepositoryProvider));
 });
+
+/// Ends the current session (FR-AUTH-006). Returns a callable (not a cached
+/// [FutureProvider]) so sign-out can be retried after transient failures.
+final signOutProvider = Provider<Future<void> Function()>((ref) {
+  return () => ref.read(authRepositoryProvider).signOut();
+});

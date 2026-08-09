@@ -8,6 +8,7 @@ class AuthSession {
     required this.email,
     this.displayName,
     this.phone = '',
+    this.role = 'customer',
   });
 
   /// Stable user id (Supabase auth.uid()).
@@ -22,7 +23,14 @@ class AuthSession {
   /// Display name, when the user has set one.
   final String? displayName;
 
+  /// Mirrored `profiles.role` claim (PF-DOC-12 §3.2). Drives role-based
+  /// navigation guards (PF-DOC-17 §3.6). Defaults to `customer`.
+  final String role;
+
   bool get isSignedIn => userId.isNotEmpty;
+
+  /// Whether the session carries the [required] role claim (guards, PF-DOC-17).
+  bool hasRole(String required) => role == required;
 
   @override
   bool operator ==(Object other) {
@@ -30,9 +38,10 @@ class AuthSession {
         other.userId == userId &&
         other.email == email &&
         other.phone == phone &&
-        other.displayName == displayName;
+        other.displayName == displayName &&
+        other.role == role;
   }
 
   @override
-  int get hashCode => Object.hash(userId, email, phone, displayName);
+  int get hashCode => Object.hash(userId, email, phone, displayName, role);
 }

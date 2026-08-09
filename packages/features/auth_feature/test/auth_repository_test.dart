@@ -53,6 +53,25 @@ void main() {
       expect(fake.signedInPassword, 'secret-password');
     });
 
+    test('propagates the role claim for guards', () async {
+      final fake = _FakeAuthDataSource(
+        session: const AuthSessionDto(
+          userId: 'u1',
+          email: 'a@b.com',
+          role: 'business',
+        ),
+      );
+      final repo = SupabaseAuthRepository(fake);
+
+      final session = await repo.signInWithEmail(
+        email: 'a@b.com',
+        password: 'secret-password',
+      );
+
+      expect(session.role, 'business');
+      expect(session.hasRole('business'), isTrue);
+    });
+
     test('propagates data source errors', () async {
       final fake = _FakeAuthDataSource(
         signInError: const PareAuthException('invalid credentials'),
