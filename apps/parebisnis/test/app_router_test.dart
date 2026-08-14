@@ -25,7 +25,7 @@ const _customer = AuthSession(
   role: 'customer',
 );
 
-final _testRestaurant = Restaurant(id: 'r1', name: 'Warung Budi', slug: 'wb');
+const _testRestaurant = Restaurant(id: 'r1', name: 'Warung Budi', slug: 'wb');
 
 Future<ProviderContainer> _pumpApp(
   WidgetTester tester, {

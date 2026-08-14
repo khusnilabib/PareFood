@@ -52,7 +52,7 @@ void main() {
   testWidgets('switches between status, menu and profile tabs', (tester) async {
     await _pumpShell(
       tester,
-      restaurants: [Restaurant(id: 'r1', name: 'Warung Budi', slug: 'wb')],
+      restaurants: const [Restaurant(id: 'r1', name: 'Warung Budi', slug: 'wb')],
     );
     await tester.pumpAndSettle();
 

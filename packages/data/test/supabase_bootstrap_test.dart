@@ -8,13 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pare_data/pare_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-AppConfig _config() => AppConfig(
-  environment: PareEnvironment.dev,
-  supabaseUrl: 'https://fake.supabase.co',
-  supabaseAnonKey: 'fake-anon-key',
-  apiBaseUrl: 'https://api.parefood.test',
-);
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -29,11 +22,25 @@ void main() {
   test('initialize builds and caches the shared client', () async {
     SharedPreferences.setMockInitialValues({});
 
-    final client = await SupabaseBootstrap.initialize(_config());
+    final client = await SupabaseBootstrap.initialize(
+      const AppConfig(
+        environment: PareEnvironment.dev,
+        supabaseUrl: 'https://fake.supabase.co',
+        supabaseAnonKey: 'fake-anon-key',
+        apiBaseUrl: 'https://api.parefood.test',
+      ),
+    );
     expect(identical(SupabaseBootstrap.client, client), isTrue);
 
     // Idempotent: a second call returns the cached client.
-    final again = await SupabaseBootstrap.initialize(_config());
+    final again = await SupabaseBootstrap.initialize(
+      const AppConfig(
+        environment: PareEnvironment.dev,
+        supabaseUrl: 'https://fake.supabase.co',
+        supabaseAnonKey: 'fake-anon-key',
+        apiBaseUrl: 'https://api.parefood.test',
+      ),
+    );
     expect(identical(again, client), isTrue);
 
     // Reset returns the guard to its uninitialised state.

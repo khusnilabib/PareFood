@@ -134,17 +134,17 @@ void main() {
 
   group('PaymentMethodTile', () {
     test('labels every method in Indonesian', () {
-      expect(PaymentMethodTile(method: PaymentMethod.qris).label, 'QRIS');
+      expect(const PaymentMethodTile(method: PaymentMethod.qris).label, 'QRIS');
       expect(
-        PaymentMethodTile(method: PaymentMethod.virtualAccount).label,
+        const PaymentMethodTile(method: PaymentMethod.virtualAccount).label,
         'Virtual Account',
       );
       expect(
-        PaymentMethodTile(method: PaymentMethod.ewallet).label,
+        const PaymentMethodTile(method: PaymentMethod.ewallet).label,
         'E-Wallet',
       );
       expect(
-        PaymentMethodTile(method: PaymentMethod.cashOnDelivery).label,
+        const PaymentMethodTile(method: PaymentMethod.cashOnDelivery).label,
         'Bayar di Tempat',
       );
     });

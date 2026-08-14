@@ -115,8 +115,8 @@ void main() {
   stdout.writeln(rows.join('\n'));
   stdout.writeln('---');
   stdout.writeln(
-    'TOTAL: ${grandHit}/${grandFound} = ${(grandHit / grandFound * 100).toStringAsFixed(1)}%',
+    'TOTAL: $grandHit/$grandFound = ${(grandHit / grandFound * 100).toStringAsFixed(1)}%',
   );
-  stdout.writeln('Zero-covered source files (${uncoveredFiles.length}):');
+  stdout.writeln('Zero-covered source files ($uncoveredFiles.length):');
   uncoveredFiles.forEach(stdout.writeln);
 }
