@@ -1,18 +1,45 @@
 # cart_feature
 
-Client-side cart for PareFood (PF-DOC-11 §3.1): immutable cart snapshot held
-by `cartProvider` (Notifier), quantity rules in the domain layer, cart screen
-with empty-state handling (FL-R07).
+Cart management feature for PareFood customer app (Sprint 2).
 
-## Layers
+## Responsibility
 
-- `data/` — `CartStore` contract for local persistence (offline strategy,
-  PF-DOC-11 §3.4; drift implementation lands later).
-- `domain/` — `Cart`, `CartItem`, `AddToCart` use case (pure Dart).
-- `application/` — `cartProvider` (Notifier), `cartStoreProvider`.
-- `presentation/` — `CartPage` + `CartItemTile`.
+Implements FR-CART-001..006 from PF-DOC-07:
+- Add/update/remove cart items with options and quantity
+- Single-restaurant cart constraint
+- Fee breakdown (subtotal + delivery + service + promo)
+- Address selection and promo validation
+- Delivery time estimates
 
-## Boundaries
+## Architecture
 
-- No networking; never depends on another feature package (MO-R02d).
-- Presentation never imports `data`; it consumes providers only (PF-DOC-11 §3.1).
+Follows PF-DOC-11 layering:
+
+```
+lib/
+├── domain/           # Pure use cases (AddToCart, RemoveItem, etc.)
+├── data/             # Repository contracts (CartRepository)
+├── application/      # Riverpod providers (cartProvider, feeBreakdownProvider)
+└── presentation/     # Pages (CartPage, CheckoutPage) + widgets
+```
+
+## Testing
+
+Unit tests for use cases (domain logic) mirror BR-PRICE rules from PF-DOC-18:
+
+```bash
+flutter test
+```
+
+## Integration
+
+Wired in `apps/parefood` composition root:
+
+```dart
+ProviderScope(
+  overrides: [
+    cartRepositoryProvider.overrideWithValue(CartRepositoryDrift()),
+  ],
+  child: app,
+)
+```

@@ -1,44 +1,46 @@
-/// A single line in the cart (PF-DOC-11 §3.2 `cartProvider`).
+/// CartItem value object — menu item instance with options + quantity (Freezed).
 library;
 
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:pare_core/pare_core.dart';
 
-/// Immutable cart line item. Equality is value-based.
-class CartItem {
-  const CartItem({
-    required this.productId,
-    required this.name,
-    required this.unitPrice,
-    this.quantity = 1,
-  });
+part 'cart_item.freezed.dart';
 
-  final String productId;
-  final String name;
-  final Money unitPrice;
-  final int quantity;
+/// Selected option for cart item (e.g., size, topping).
+@freezed
+class CartItemOption with _\$CartItemOption {
+  const factory CartItemOption({
+    required String optionGroupId,
+    required String optionGroupName,
+    required String optionValueId,
+    required String optionValueLabel,
+    required Money extraPrice,
+  }) = _CartItemOption;
+}
 
-  /// Price × quantity, in rupiah.
-  Money get lineTotal => unitPrice * quantity;
+/// Menu item instance in cart with options + quantity.
+@freezed
+class CartItem with _\$CartItem {
+  const CartItem._();
 
-  CartItem copyWithQuantity(int quantity) {
-    assert(quantity > 0);
-    return CartItem(
-      productId: productId,
-      name: name,
-      unitPrice: unitPrice,
-      quantity: quantity,
+  const factory CartItem({
+    required String cartItemId,
+    required String menuItemId,
+    required String name,
+    required Money unitPrice,
+    required int quantity,
+    @Default(<CartItemOption>[]) List<CartItemOption> selectedOptions,
+    String? notes,
+    required DateTime addedAt,
+  }) = _CartItem;
+
+  /// Total price: (unit + options) × quantity.
+  Money get itemTotal {
+    final optionsTotalPerUnit = selectedOptions.fold(
+      Money.fromRupiah(0),
+      (sum, opt) => sum + opt.extraPrice,
     );
+    final pricePerUnit = unitPrice + optionsTotalPerUnit;
+    return pricePerUnit * quantity;
   }
-
-  @override
-  bool operator ==(Object other) {
-    return other is CartItem &&
-        other.productId == productId &&
-        other.name == name &&
-        other.unitPrice == unitPrice &&
-        other.quantity == quantity;
-  }
-
-  @override
-  int get hashCode => Object.hash(productId, name, unitPrice, quantity);
 }

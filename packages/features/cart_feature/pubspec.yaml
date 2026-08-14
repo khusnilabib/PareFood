@@ -1,7 +1,8 @@
 name: cart_feature
-description: >-
-  PareFood cart feature: client-side cart state, quantity rules and cart
-  screen (PF-DOC-11 §3.1). Local-first; persistence lands via CartStore (drift).
+description: >
+  PareFood cart management — Sprint 2 composition (FR-CART-001..006).
+  Thin feature layer over pare_data repository contracts (DEP-R06).
+  Implements cart state, item management, and checkout flow.
 publish_to: none
 version: 0.1.0
 
@@ -13,8 +14,11 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^3.3.2
+  freezed_annotation: ^2.4.1
   pare_core:
     path: ../../core
+  pare_data:
+    path: ../../data
   pare_design:
     path: ../../design
   pare_util:
@@ -24,6 +28,9 @@ dev_dependencies:
   flutter_lints: any
   flutter_test:
     sdk: flutter
+  freezed_cli: ^2.4.1
+  build_runner: ^2.4.6
+  mocktail: ^1.0.0
 
 flutter:
   uses-material-design: true
