@@ -1,4 +1,5 @@
-/// Registration form widget (PF-DOC-11 §3.1 presentation layer).
+/// Email/password registration form with Riverpod state management.
+/// Optimized to avoid unnecessary rebuilds using selective state watching.
 library;
 
 import 'package:flutter/material.dart';
@@ -9,8 +10,22 @@ import 'package:pare_util/pare_util.dart';
 import '../../application/auth_providers.dart';
 import '../../data/auth_repository.dart';
 
+/// Riverpod state notifier for managing form submission state.
+class SignUpFormNotifier extends StateNotifier<bool> {
+  SignUpFormNotifier() : super(false);
+
+  void setSubmitting(bool value) => state = value;
+}
+
+/// Provider for form submission state (replaces setState).
+final signUpFormProvider =
+    StateNotifierProvider<SignUpFormNotifier, bool>((ref) {
+  return SignUpFormNotifier();
+});
+
 /// Email/password registration bound to [signUpUseCaseProvider]
-/// (FR-AUTH-001).
+/// (FR-AUTH-001). Uses Riverpod for state management instead of setState
+/// to enable more granular control over rebuilds.
 class RegisterForm extends ConsumerStatefulWidget {
   const RegisterForm({super.key});
 
@@ -20,10 +35,17 @@ class RegisterForm extends ConsumerStatefulWidget {
 
 class _RegisterFormState extends ConsumerState<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmController = TextEditingController();
-  bool _submitting = false;
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+  late final TextEditingController _confirmController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmController = TextEditingController();
+  }
 
   @override
   void dispose() {
@@ -38,6 +60,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
     final useCase = ref.read(signUpUseCaseProvider);
+    final formNotifier = ref.read(signUpFormProvider.notifier);
 
     final error = useCase.validate(
       email: email,
@@ -52,7 +75,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
       return;
     }
 
-    setState(() => _submitting = true);
+    formNotifier.setSubmitting(true);
     try {
       final outcome = await useCase.call(email: email, password: password);
       if (!mounted) return;
@@ -71,12 +94,15 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
         const SnackBar(content: Text('Pendaftaran gagal. Coba lagi.')),
       );
     } finally {
-      if (mounted) setState(() => _submitting = false);
+      if (mounted) formNotifier.setSubmitting(false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Only watch submitting state; other rebuilds don't affect this form
+    final isSubmitting = ref.watch(signUpFormProvider);
+
     return Form(
       key: _formKey,
       child: Column(
@@ -111,8 +137,8 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
           const SizedBox(height: PfSpacing.lg),
           PfButton(
             label: 'Daftar',
-            onPressed: _submitting ? null : _submit,
-            isLoading: _submitting,
+            onPressed: isSubmitting ? null : _submit,
+            isLoading: isSubmitting,
           ),
         ],
       ),

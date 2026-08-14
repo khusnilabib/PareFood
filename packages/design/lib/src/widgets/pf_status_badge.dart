@@ -1,4 +1,5 @@
 /// Status pill showing colour + icon + text together (PF-DOC-16 §3.2 DS-R03).
+/// Optimized to cache theme access and avoid unnecessary rebuilds.
 library;
 
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ enum PfStatus {
 
 /// A compact pill conveying status with colour, icon and text together so it is
 /// perceivable beyond colour alone (NFR-029/030).
+/// Optimized to cache theme data to avoid repeated Theme.of() calls.
 class PfStatusBadge extends StatelessWidget {
   const PfStatusBadge({
     required this.status,
@@ -43,7 +45,9 @@ class PfStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
+    // Cache theme access to avoid multiple Theme.of() calls
+    final textTheme = Theme.of(context).textTheme;
+    final textStyle = textTheme.labelMedium?.copyWith(
       color: status.color,
       fontWeight: FontWeight.w600,
     );

@@ -1,4 +1,5 @@
 /// Brand button component (PF-DOC-16 §3.7).
+/// Optimized to cache theme and color scheme access.
 library;
 
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ enum PfButtonSize { medium, large }
 
 /// The shared action button used across all PareFood apps. Colours derive from
 /// the active [ColorScheme] (DS-R01); labels are always localised at call site.
+/// Optimized to cache color scheme access to reduce Theme.of() calls.
 class PfButton extends StatelessWidget {
   const PfButton({
     required this.label,
@@ -47,10 +49,22 @@ class PfButton extends StatelessWidget {
   /// Optional leading icon.
   final IconData? icon;
 
+  /// Extracts the foreground color based on variant and color scheme.
+  Color _foreground(ColorScheme scheme) => switch (variant) {
+    PfButtonVariant.primary => scheme.onPrimary,
+    PfButtonVariant.secondary => PfColors.secondaryLight,
+    PfButtonVariant.outline => scheme.primary,
+    PfButtonVariant.text => scheme.primary,
+  };
+
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    // Cache theme access to avoid multiple Theme.of() calls
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final height = size == PfButtonSize.large ? 52.0 : 44.0;
+    final foregroundColor = _foreground(scheme);
 
     final Widget child = Row(
       mainAxisSize: expandWidth ? MainAxisSize.max : MainAxisSize.min,
@@ -66,16 +80,16 @@ class PfButton extends StatelessWidget {
             height: 18,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: _foreground(scheme),
+              color: foregroundColor,
             ),
           )
         else
           Flexible(
             child: Text(
               label,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              style: textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: _foreground(scheme),
+                color: foregroundColor,
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -132,18 +146,13 @@ class PfButton extends StatelessWidget {
           style: TextButton.styleFrom(
             foregroundColor: scheme.primary,
             minimumSize: Size(expandWidth ? double.infinity : 0, height),
-            padding: const EdgeInsets.symmetric(horizontal: PfSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: PfSpacing.lg),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(PfRadius.md),
+            ),
           ),
           child: child,
         );
     }
-  }
-
-  Color _foreground(ColorScheme scheme) {
-    return switch (variant) {
-      PfButtonVariant.primary => scheme.onPrimary,
-      PfButtonVariant.secondary => PfColors.secondaryLight,
-      PfButtonVariant.outline || PfButtonVariant.text => scheme.primary,
-    };
   }
 }
