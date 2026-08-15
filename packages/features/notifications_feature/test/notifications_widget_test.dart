@@ -49,14 +49,8 @@ void main() {
       expect(find.text('Pesanan diproses'), findsOneWidget);
       expect(find.text('Pesanan #123 sedang disiapkan.'), findsOneWidget);
       // Each tile shows the type-specific icon (not a generic bell icon).
-      expect(
-        find.byIcon(IconData(NotificationType.orderPreparing.icon)),
-        findsOneWidget,
-      );
-      expect(
-        find.byIcon(IconData(NotificationType.orderDelivered.icon)),
-        findsOneWidget,
-      );
+      expect(find.byIcon(Icons.restaurant_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
     });
 
     testWidgets('shows the empty state when there are no notifications', (

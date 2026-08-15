@@ -17,10 +17,19 @@ class PaymentMethodTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(IconData(method.icon)),
+      leading: Icon(_iconFor(method)),
       title: Text(method.label),
       trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
     );
   }
+}
+
+/// Maps a [PaymentMethod] to a const [IconData] (domain stays Flutter-free).
+IconData _iconFor(PaymentMethod method) {
+  return switch (method) {
+    PaymentMethod.cashOnDelivery => Icons.payments_outlined,
+    PaymentMethod.ewallet => Icons.account_balance_wallet_outlined,
+    PaymentMethod.card => Icons.credit_card_outlined,
+  };
 }

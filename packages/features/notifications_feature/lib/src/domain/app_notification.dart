@@ -38,18 +38,6 @@ enum NotificationType {
     NotificationType.promo => 'promo',
     NotificationType.system => 'system',
   };
-
-  /// Material icon code point for the notification type.
-  int get icon => switch (this) {
-    NotificationType.orderAccepted => 0xe86c, // check_circle
-    NotificationType.orderPreparing => 0xe6fc, // restaurant
-    NotificationType.orderReady => 0xe88f, // ready
-    NotificationType.driverAssigned => 0xe59c, // local_shipping
-    NotificationType.orderDelivered => 0xe86c, // check_circle
-    NotificationType.orderCancelled => 0xe888, // cancel
-    NotificationType.promo => 0xe05f, // local_offer
-    NotificationType.system => 0xe88f, // info
-  };
 }
 
 /// Immutable notification item. Equality is value-based.

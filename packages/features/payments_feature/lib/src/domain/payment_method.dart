@@ -33,11 +33,4 @@ enum PaymentMethod {
     PaymentMethod.ewallet => 'E-Wallet (GoPay/OVO/DANA)',
     PaymentMethod.card => 'Kartu Debit/Kredit',
   };
-
-  /// Material icon for the method.
-  int get icon => switch (this) {
-    PaymentMethod.cashOnDelivery => 0xe59c, // Icons.payments_outlined
-    PaymentMethod.ewallet => 0xe6fc, // Icons.account_balance_wallet_outlined
-    PaymentMethod.card => 0xe6a1, // Icons.credit_card_outlined
-  };
 }

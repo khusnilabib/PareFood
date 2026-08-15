@@ -21,7 +21,7 @@ class NotificationTile extends StatelessWidget {
     final theme = Theme.of(context);
     return ListTile(
       leading: Icon(
-        IconData(notification.type.icon),
+        _iconFor(notification.type),
         color: notification.isRead
             ? theme.colorScheme.onSurfaceVariant
             : theme.colorScheme.primary,
@@ -48,4 +48,18 @@ class NotificationTile extends StatelessWidget {
       onTap: onTap,
     );
   }
+}
+
+/// Maps a [NotificationType] to a const [IconData] (domain stays Flutter-free).
+IconData _iconFor(NotificationType type) {
+  return switch (type) {
+    NotificationType.orderAccepted => Icons.check_circle_outline,
+    NotificationType.orderPreparing => Icons.restaurant_outlined,
+    NotificationType.orderReady => Icons.bolt_outlined,
+    NotificationType.driverAssigned => Icons.local_shipping_outlined,
+    NotificationType.orderDelivered => Icons.check_circle_outline,
+    NotificationType.orderCancelled => Icons.cancel_outlined,
+    NotificationType.promo => Icons.local_offer_outlined,
+    NotificationType.system => Icons.info_outline,
+  };
 }
