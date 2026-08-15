@@ -142,7 +142,11 @@ void main() {
       expect(a, b);
       expect(a.hashCode, b.hashCode);
       expect(a == c, isFalse);
-      expect(a == 'o1', isFalse);
+      // Equality with an unrelated type must not crash and must be false
+      // (defensive `==` contract). Cast through Object so the static
+      // unrelated_type_equality_checks lint does not flag the comparison.
+      const Object other = 'o1';
+      expect(a == other, isFalse);
     });
   });
 }
