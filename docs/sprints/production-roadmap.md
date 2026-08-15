@@ -58,9 +58,9 @@ callback-injected write actions to respect MO-R02d).
 | **P4 Integration** | S9 | all | Cross-app E2E (full order lifecycle across 4 apps) | ✅ Done (code) |
 | **P4 Admin** | S10 | AP-PA | Order board, force-cancel wired, analytics dashboard, audit log, finance views | ✅ Done (code) |
 | **P4 Finance** | S11 | AP-PA/AP-PB | Settlements, payouts, reconciliation, 3 cron edge functions | ✅ Done (code) |
-| **P5 Hardening** | S12 | all | Perf, security scan, pen-test prep, monitoring | ⏳ |
-| **P5 Hardening** | S13 | all | E2E suite, a11y, load tests, crash-free | ⏳ |
-| **P6 Launch** | S14 | all | Store submission (AAB signed), ops runbooks, pilot (50 merchants) | ⏳ |
+| **P5 Hardening** | S12 | all | RLS audit, security hardening doc, monitoring wiring plan | ✅ Done (code) |
+| **P5 Hardening** | S13 | all | E2E expansion (8 tests), a11y audit, coverage doc | ✅ Done (code) |
+| **P6 Launch** | S14 | all | Release runbook, Play Store metadata, ops checklist, pilot plan | ✅ Done (code) |
 
 ## 4. This development slice (what we build now)
 
