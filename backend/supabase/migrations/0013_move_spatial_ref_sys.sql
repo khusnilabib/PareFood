@@ -1,17 +1,15 @@
 -- 0013_move_spatial_ref_sys.sql
--- S12 security fix: hide PostGIS spatial_ref_sys from PostgREST.
+-- S12 security fix: attempt to hide PostGIS spatial_ref_sys from PostgREST.
 --
--- NOTE: The ideal fix is `ALTER TABLE public.spatial_ref_sys SET SCHEMA
--- extensions`, but the table is owned by `supabase_admin` (Supabase's
--- internal reserved role) and the `postgres` role used by migrations is
--- neither the owner nor a superuser. This migration uses the alternative
--- approach: REVOKE all grants from API roles + reload PostgREST so the
--- table is no longer accessible via the REST API.
+-- Status: ACCEPTED for pilot. See docs/sprints/security-advisor-exception-
+-- spatial_ref_sys.md for the full risk assessment and resolution plan.
 --
--- If the REVOKE does not take effect (grants may be re-applied by Supabase's
--- default privileges), contact Supabase support to run the ALTER TABLE as
--- supabase_admin, or accept the Security Advisor warning (the table only
--- contains coordinate system definitions, not sensitive data).
+-- The table is owned by supabase_admin (reserved role). The REVOKE below is
+-- best-effort; Supabase's default privilege system may re-apply grants.
+-- The warning is low-risk: spatial_ref_sys contains only public EPSG
+-- coordinate system definitions, not user/business data.
+-- Resolution for public launch: contact Supabase Support to run the ALTER
+-- TABLE as supabase_admin.
 
 -- Revoke all API-role access to spatial_ref_sys.
 revoke all on public.spatial_ref_sys from anon;
