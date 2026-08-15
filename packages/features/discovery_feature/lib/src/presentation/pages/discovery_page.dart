@@ -1,6 +1,9 @@
 /// Discovery home: nearest-first restaurant list (FR-DISC-001, PF-DOC-11 §3.1).
 ///
-/// Covers the FL-R07 four states (loading / data / error / empty).
+/// Covers the FL-R07 four states (loading / data / error / empty). An optional
+/// [onViewRestaurant] callback lets the composition root customise the detail
+/// navigation (e.g. to wire an add-to-cart callback); when null, the detail
+/// page is pushed read-only (MO-R02d).
 library;
 
 import 'package:flutter/material.dart';
@@ -14,7 +17,12 @@ import 'restaurant_detail_page.dart';
 /// Discovery list for a fixed reference location (Sprint 1; geolocation wiring
 /// lands with the customer app).
 class DiscoveryPage extends ConsumerWidget {
-  const DiscoveryPage({super.key});
+  const DiscoveryPage({this.onViewRestaurant, super.key});
+
+  /// Custom detail-page navigation. When `null`, taps push a read-only
+  /// [RestaurantDetailPage].
+  final void Function(BuildContext context, String restaurantId)?
+  onViewRestaurant;
 
   static const _defaultLat = -6.200000;
   static const _defaultLng = 106.816666;
@@ -87,12 +95,17 @@ class DiscoveryPage extends ConsumerWidget {
                     ],
                   ),
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) =>
-                            RestaurantDetailPage(restaurantId: r.id),
-                      ),
-                    );
+                    final cb = onViewRestaurant;
+                    if (cb != null) {
+                      cb(context, r.id);
+                    } else {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) =>
+                              RestaurantDetailPage(restaurantId: r.id),
+                        ),
+                      );
+                    }
                   },
                 ),
               );

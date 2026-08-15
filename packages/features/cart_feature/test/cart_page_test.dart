@@ -33,11 +33,32 @@ void main() {
     await tester.pumpWidget(build(cart));
 
     expect(find.text('Nasi Goreng'), findsOneWidget);
-    expect(find.text('2 × Rp 25.000'), findsOneWidget);
+    // CartItemTile shows unit price per item and a separate quantity stepper.
+    expect(find.text('Rp 25.000 / item'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
     expect(find.text('Rp 50.000'), findsOneWidget);
     expect(find.text('Es Teh'), findsOneWidget);
     expect(find.text('Total'), findsOneWidget);
     expect(find.text('Rp 55.000'), findsOneWidget);
+    expect(find.text('Pesan Sekarang'), findsOneWidget);
+  });
+
+  testWidgets('checkout confirmation clears the cart', (tester) async {
+    final cart = const Cart.empty().addItem(
+      item('p1', 'Nasi Goreng', 25000, quantity: 1),
+    );
+    await tester.pumpWidget(build(cart));
+
+    await tester.tap(find.text('Pesan Sekarang'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Konfirmasi pesanan'), findsOneWidget);
+
+    await tester.tap(find.text('Pesan'));
+    await tester.pumpAndSettle();
+
+    // Cart is cleared → empty state is shown.
+    expect(find.text('Keranjang masih kosong'), findsOneWidget);
   });
 }
 

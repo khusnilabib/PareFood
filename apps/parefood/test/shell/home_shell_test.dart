@@ -11,7 +11,7 @@ import 'package:profile_feature/profile_feature.dart';
 import '../fakes.dart';
 
 void main() {
-  testWidgets('shows Beranda/Akun tabs and switches between them', (
+  testWidgets('shows Beranda/Keranjang/Akun tabs and switches between them', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -28,15 +28,23 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Beranda'), findsOneWidget);
+    expect(find.text('Keranjang'), findsOneWidget);
     expect(find.text('Akun'), findsOneWidget);
     // Empty discovery results render the FL-R07 empty state.
     expect(find.text('Belum ada restoran'), findsOneWidget);
     expect(tester.widget<IndexedStack>(find.byType(IndexedStack)).index, 0);
 
-    await tester.tap(find.text('Akun'));
+    await tester.tap(find.text('Keranjang'));
     await tester.pumpAndSettle();
 
     expect(tester.widget<IndexedStack>(find.byType(IndexedStack)).index, 1);
+    // Empty cart renders its empty state.
+    expect(find.text('Keranjang masih kosong'), findsOneWidget);
+
+    await tester.tap(find.text('Akun'));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<IndexedStack>(find.byType(IndexedStack)).index, 2);
     expect(find.text('Profil'), findsOneWidget);
     expect(find.text('Budi Santoso'), findsOneWidget);
   });

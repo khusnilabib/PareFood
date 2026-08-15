@@ -12,6 +12,8 @@ resolution: workspace
 dependencies:
   auth_feature:
     path: ../../packages/features/auth_feature
+  cart_feature:
+    path: ../../packages/features/cart_feature
   discovery_feature:
     path: ../../packages/features/discovery_feature
   flutter:
