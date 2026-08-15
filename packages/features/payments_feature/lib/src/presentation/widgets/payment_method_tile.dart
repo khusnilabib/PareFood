@@ -7,23 +7,20 @@ import '../../domain/payment_method.dart';
 
 /// Compact row describing one [PaymentMethod].
 class PaymentMethodTile extends StatelessWidget {
-  const PaymentMethodTile({required this.method, super.key});
+  const PaymentMethodTile({required this.method, this.onTap, super.key});
 
   final PaymentMethod method;
+
+  /// Called when the tile is tapped (e.g. to select at checkout).
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: const Icon(Icons.account_balance_wallet_outlined),
-      title: Text(label),
+      leading: Icon(IconData(method.icon)),
+      title: Text(method.label),
       trailing: const Icon(Icons.chevron_right),
+      onTap: onTap,
     );
   }
-
-  String get label => switch (method) {
-    PaymentMethod.qris => 'QRIS',
-    PaymentMethod.virtualAccount => 'Virtual Account',
-    PaymentMethod.ewallet => 'E-Wallet',
-    PaymentMethod.cashOnDelivery => 'Bayar di Tempat',
-  };
 }

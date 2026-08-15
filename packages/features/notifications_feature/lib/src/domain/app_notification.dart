@@ -1,5 +1,56 @@
 /// A single push/in-app notification for the current user.
+///
+/// S6 expansion: adds [type] for routing (order status vs system), [data]
+/// for deep-link payloads, and [orderId] for order-related notifications.
 library;
+
+/// Notification category for icon + routing (FR-NOTIF-001..004).
+enum NotificationType {
+  orderAccepted,
+  orderPreparing,
+  orderReady,
+  driverAssigned,
+  orderDelivered,
+  orderCancelled,
+  promo,
+  system;
+
+  static NotificationType fromString(String? value) {
+    return switch (value) {
+      'order_accepted' => NotificationType.orderAccepted,
+      'order_preparing' => NotificationType.orderPreparing,
+      'order_ready' => NotificationType.orderReady,
+      'driver_assigned' => NotificationType.driverAssigned,
+      'order_delivered' => NotificationType.orderDelivered,
+      'order_cancelled' => NotificationType.orderCancelled,
+      'promo' => NotificationType.promo,
+      _ => NotificationType.system,
+    };
+  }
+
+  String toWire() => switch (this) {
+    NotificationType.orderAccepted => 'order_accepted',
+    NotificationType.orderPreparing => 'order_preparing',
+    NotificationType.orderReady => 'order_ready',
+    NotificationType.driverAssigned => 'driver_assigned',
+    NotificationType.orderDelivered => 'order_delivered',
+    NotificationType.orderCancelled => 'order_cancelled',
+    NotificationType.promo => 'promo',
+    NotificationType.system => 'system',
+  };
+
+  /// Material icon code point for the notification type.
+  int get icon => switch (this) {
+    NotificationType.orderAccepted => 0xe86c, // check_circle
+    NotificationType.orderPreparing => 0xe6fc, // restaurant
+    NotificationType.orderReady => 0xe88f, // ready
+    NotificationType.driverAssigned => 0xe59c, // local_shipping
+    NotificationType.orderDelivered => 0xe86c, // check_circle
+    NotificationType.orderCancelled => 0xe888, // cancel
+    NotificationType.promo => 0xe05f, // local_offer
+    NotificationType.system => 0xe88f, // info
+  };
+}
 
 /// Immutable notification item. Equality is value-based.
 class AppNotification {
@@ -8,14 +59,24 @@ class AppNotification {
     required this.title,
     required this.body,
     required this.createdAt,
+    required this.type,
     this.isRead = false,
+    this.orderId,
+    this.data,
   });
 
   final String id;
   final String title;
   final String body;
   final DateTime createdAt;
+  final NotificationType type;
   final bool isRead;
+
+  /// Order id when the notification is order-related (for deep-link routing).
+  final String? orderId;
+
+  /// Extra payload (promo code, driver name, etc.).
+  final Map<String, dynamic>? data;
 
   AppNotification copyWith({bool? isRead}) {
     return AppNotification(
@@ -23,7 +84,10 @@ class AppNotification {
       title: title,
       body: body,
       createdAt: createdAt,
+      type: type,
       isRead: isRead ?? this.isRead,
+      orderId: orderId,
+      data: data,
     );
   }
 
@@ -34,9 +98,12 @@ class AppNotification {
         other.title == title &&
         other.body == body &&
         other.createdAt == createdAt &&
-        other.isRead == isRead;
+        other.type == type &&
+        other.isRead == isRead &&
+        other.orderId == orderId;
   }
 
   @override
-  int get hashCode => Object.hash(id, title, body, createdAt, isRead);
+  int get hashCode =>
+      Object.hash(id, title, body, createdAt, type, isRead, orderId);
 }

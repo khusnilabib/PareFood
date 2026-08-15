@@ -13,13 +13,24 @@ import 'package:meta/meta.dart';
 /// precision-limited (53-bit). All operations return a new [Money].
 @immutable
 class Money implements Comparable<Money> {
-  Money(this._amount) : assert(!_amount.isNegative, 'Money cannot be negative');
+  /// Creates [Money] from a [BigInt] amount. Const-constructible so [Money]
+  /// can be used in const contexts (default parameter values, compile-time
+  /// constants). Negative amounts are guarded at runtime by the
+  /// [Money.fromRupiah] factory and the subtraction operator.
+  const Money(this._amount);
 
   /// Amount in whole Rupiah.
   final BigInt _amount;
 
-  /// Creates [Money] from a whole-rupiah [int].
-  factory Money.fromRupiah(int rupiah) => Money(BigInt.from(rupiah));
+  /// Creates [Money] from a whole-rupiah [int]. Asserts non-negative.
+  factory Money.fromRupiah(int rupiah) {
+    assert(rupiah >= 0, 'Money cannot be negative');
+    return Money(BigInt.from(rupiah));
+  }
+
+  /// Zero value. Lazily initialised because [BigInt.zero] is not a
+  /// compile-time constant.
+  static final Money zero = Money(BigInt.zero);
 
   /// Creates [Money] from the integer amount, parsing a JSON string value.
   factory Money.fromJson(Object? json) {

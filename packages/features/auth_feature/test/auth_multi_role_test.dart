@@ -10,13 +10,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('AuthSession multi-role (FR-AUTH-006)', () {
     test('defaults roles to [role] when not specified', () {
-      final s = AuthSession(userId: 'u1', email: 'a@b.c', role: 'customer');
+      const s = AuthSession(userId: 'u1', email: 'a@b.c', role: 'customer');
       expect(s.roles, ['customer']);
       expect(s.canSwitchRole, isFalse);
     });
 
     test('canSwitchRole is true when more than one role is held', () {
-      final s = AuthSession(
+      const s = AuthSession(
         userId: 'u1',
         email: 'a@b.c',
         role: 'customer',
@@ -28,7 +28,7 @@ void main() {
     });
 
     test('copyWith preserves identity and updates role/roles', () {
-      final s = AuthSession(
+      const s = AuthSession(
         userId: 'u1',
         email: 'a@b.c',
         role: 'customer',
@@ -42,13 +42,13 @@ void main() {
     });
 
     test('equality is order-insensitive for roles', () {
-      final a = AuthSession(
+      const a = AuthSession(
         userId: 'u1',
         email: 'a@b.c',
         role: 'customer',
         roles: ['customer', 'driver'],
       );
-      final b = AuthSession(
+      const b = AuthSession(
         userId: 'u1',
         email: 'a@b.c',
         role: 'customer',
@@ -59,13 +59,13 @@ void main() {
     });
 
     test('inequality when roles differ', () {
-      final a = AuthSession(
+      const a = AuthSession(
         userId: 'u1',
         email: 'a@b.c',
         role: 'customer',
         roles: ['customer', 'driver'],
       );
-      final b = AuthSession(
+      const b = AuthSession(
         userId: 'u1',
         email: 'a@b.c',
         role: 'customer',

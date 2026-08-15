@@ -36,8 +36,8 @@ void main() {
       );
     });
 
-    test('rejects negative construction', () {
-      expect(() => Money(BigInt.from(-1)), throwsA(isA<AssertionError>()));
+    test('rejects negative construction via factory', () {
+      expect(() => Money.fromRupiah(-1), throwsA(isA<AssertionError>()));
     });
 
     test('multiplies by integer factor', () {

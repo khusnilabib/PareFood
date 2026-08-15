@@ -15,7 +15,12 @@ import '../widgets/cart_item_tile.dart';
 
 /// Cart screen bound to [cartProvider].
 class CartPage extends ConsumerWidget {
-  const CartPage({super.key});
+  const CartPage({this.onCheckout, super.key});
+
+  /// When provided, the "Pesan Sekarang" button calls this instead of the
+  /// demo confirmation dialog. The app composition root wires it to navigate
+  /// to the full checkout flow (MO-R02d: cart_feature never imports the app).
+  final VoidCallback? onCheckout;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -91,11 +96,13 @@ class CartPage extends ConsumerWidget {
                         PfButton(
                           label: 'Pesan Sekarang',
                           icon: Icons.shopping_bag_outlined,
-                          onPressed: () => _confirmCheckout(
-                            context,
-                            ref,
-                            cart.restaurantName,
-                          ),
+                          onPressed:
+                              onCheckout ??
+                              () => _confirmCheckout(
+                                context,
+                                ref,
+                                cart.restaurantName,
+                              ),
                         ),
                       ],
                     ),

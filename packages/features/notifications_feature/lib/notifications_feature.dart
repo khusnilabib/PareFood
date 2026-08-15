@@ -1,8 +1,8 @@
 /// notifications_feature — in-app notifications for PareFood (PF-DOC-11 §3.1).
 ///
 /// ## Responsibility
-/// Notification list, read-state handling and the derived unread count shown
-/// on the app badge.
+/// Notification list, read-state handling, device-token registration
+/// (FR-NOTIF-005) and the derived unread count shown on the app badge.
 ///
 /// ## Boundaries — must NOT
 /// - Import Supabase/Dio SDKs directly (MO-R02a).
@@ -11,6 +11,7 @@ library;
 
 export 'src/application/notifications_providers.dart';
 export 'src/data/notifications_repository.dart';
+export 'src/data/supabase_notifications_repository.dart';
 export 'src/domain/app_notification.dart';
 export 'src/domain/notifications_use_cases.dart';
 export 'src/presentation/pages/notifications_page.dart';

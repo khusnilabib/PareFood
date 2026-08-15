@@ -13,11 +13,11 @@ class DriverShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+    return const DefaultTabController(
       length: 2,
       child: Scaffold(
-        body: const TabBarView(children: [DriverJobsPage(), ProfilePage()]),
-        bottomNavigationBar: const TabBar(
+        body: TabBarView(children: [DriverJobsPage(), ProfilePage()]),
+        bottomNavigationBar: TabBar(
           tabs: [
             Tab(icon: Icon(Icons.local_shipping_outlined), text: 'Pekerjaan'),
             Tab(icon: Icon(Icons.person_outline), text: 'Akun'),

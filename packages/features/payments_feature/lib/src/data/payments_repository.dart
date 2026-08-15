@@ -8,8 +8,10 @@ library;
 
 import 'package:pare_core/pare_core.dart';
 
+import '../domain/payment_intent.dart';
 import '../domain/payment_method.dart';
 import '../domain/payment_result.dart';
+import '../domain/promo_code.dart';
 
 /// Contract implemented by the composition root.
 abstract interface class PaymentsRepository {
@@ -24,4 +26,16 @@ abstract interface class PaymentsRepository {
 
   /// Methods currently offered to the user.
   Future<List<PaymentMethod>> availableMethods();
+
+  /// Validates a promo code against [subtotal] (BR-PROMO-001..006).
+  /// Returns the computed discount amount; [PromoValidation.none] when the
+  /// code is invalid or expired.
+  Future<PromoValidation> validatePromo({
+    required String code,
+    required Money subtotal,
+  });
+
+  /// Fetches the latest payment intent for [orderId]. Used to poll charge
+  /// status after a webhook (FR-PAY-002).
+  Future<PaymentIntent?> fetchIntentForOrder(String orderId);
 }

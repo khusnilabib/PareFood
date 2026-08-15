@@ -10,7 +10,7 @@ void main() {
         () => useCase(
           orderId: 'o1',
           amount: Money.fromRupiah(75000),
-          method: PaymentMethod.qris,
+          method: PaymentMethod.ewallet,
         ),
         throwsArgumentError,
       );
@@ -21,7 +21,7 @@ void main() {
       final result = await useCase(
         orderId: 'o1',
         amount: Money.fromRupiah(75000),
-        method: PaymentMethod.qris,
+        method: PaymentMethod.ewallet,
         idempotencyKey: 'key-1',
       );
       expect(result.isSuccess, isTrue);
@@ -45,4 +45,13 @@ class _FakePaymentsRepository implements PaymentsRepository {
 
   @override
   Future<List<PaymentMethod>> availableMethods() async => PaymentMethod.values;
+
+  @override
+  Future<PromoValidation> validatePromo({
+    required String code,
+    required Money subtotal,
+  }) async => PromoValidation.none;
+
+  @override
+  Future<PaymentIntent?> fetchIntentForOrder(String orderId) async => null;
 }

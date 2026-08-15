@@ -11,6 +11,7 @@
 /// - Depend on another feature package (MO-R02d).
 library;
 
+export 'src/application/order_tracking_providers.dart';
 export 'src/application/orders_providers.dart';
 export 'src/data/orders_repository.dart';
 export 'src/data/supabase_orders_repository.dart';
@@ -23,5 +24,6 @@ export 'src/presentation/pages/admin_order_board_page.dart';
 export 'src/presentation/pages/driver_jobs_page.dart';
 export 'src/presentation/pages/incoming_orders_page.dart';
 export 'src/presentation/pages/order_detail_page.dart';
+export 'src/presentation/pages/order_tracking_page.dart';
 export 'src/presentation/pages/orders_page.dart';
 export 'src/presentation/widgets/order_card.dart';

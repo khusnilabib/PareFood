@@ -12,3 +12,12 @@ class FetchNotifications {
 
   Future<List<AppNotification>> call() => _repository.fetchNotifications();
 }
+
+/// Marks all unread notifications as read.
+class MarkAllRead {
+  const MarkAllRead(this._repository);
+
+  final NotificationsRepository _repository;
+
+  Future<void> call() => _repository.markAllRead();
+}

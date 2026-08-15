@@ -19,6 +19,7 @@ dependencies:
     path: ../../data
   pare_design:
     path: ../../design
+  supabase_flutter: ^2.9.5
 
 dev_dependencies:
   flutter_lints: any

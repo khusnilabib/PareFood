@@ -32,3 +32,8 @@ final unreadNotificationsProvider = Provider<int>((ref) {
   if (notifications == null) return 0;
   return notifications.where((n) => !n.isRead).length;
 });
+
+/// Marks all notifications as read. Returns a callable so the UI can retry.
+final markAllReadProvider = Provider<Future<void> Function()>((ref) {
+  return () => ref.read(notificationsRepositoryProvider).markAllRead();
+});

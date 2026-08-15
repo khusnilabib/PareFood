@@ -1,4 +1,4 @@
-/// Single notification row with relative time (PF-DOC-16 §3.10).
+/// Single notification row with type-based icon + relative time (PF-DOC-16).
 library;
 
 import 'package:flutter/material.dart';
@@ -9,18 +9,19 @@ import '../../domain/app_notification.dart';
 
 /// Compact row for one [AppNotification].
 class NotificationTile extends StatelessWidget {
-  const NotificationTile({required this.notification, super.key});
+  const NotificationTile({required this.notification, this.onTap, super.key});
 
   final AppNotification notification;
+
+  /// Called when the tile is tapped (e.g. to deep-link to the order).
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ListTile(
       leading: Icon(
-        notification.isRead
-            ? Icons.notifications_outlined
-            : Icons.notifications_active,
+        IconData(notification.type.icon),
         color: notification.isRead
             ? theme.colorScheme.onSurfaceVariant
             : theme.colorScheme.primary,
@@ -44,6 +45,7 @@ class NotificationTile extends StatelessWidget {
           ),
         ],
       ),
+      onTap: onTap,
     );
   }
 }

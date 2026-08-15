@@ -152,18 +152,23 @@ class _RoleSwitcherDialogState extends ConsumerState<RoleSwitcherDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Ganti peran'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final role in widget.roles)
-            RadioListTile<String>(
-              value: role,
-              groupValue: widget.activeRole,
-              onChanged: _switching ? null : (_) => _switch(role),
-              title: Text(roleLabel(role)),
-              secondary: Icon(roleIcon(role)),
-            ),
-        ],
+      content: RadioGroup<String>(
+        groupValue: widget.activeRole,
+        onChanged: (value) {
+          if (_switching || value == null) return;
+          _switch(value);
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final role in widget.roles)
+              RadioListTile<String>(
+                value: role,
+                title: Text(roleLabel(role)),
+                secondary: Icon(roleIcon(role)),
+              ),
+          ],
+        ),
       ),
       actions: [
         TextButton(

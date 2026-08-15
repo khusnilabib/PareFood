@@ -51,8 +51,8 @@ callback-injected write actions to respect MO-R02d).
 | **P1 Backend core** | S2 | — | Multi-role (FR-AUTH-006), hot indexes (0010), user_roles (0011) | ✅ Done (code) |
 | **P1 Backend core** | S3 | — | Order-lifecycle edge functions (place/accept/ready/dispatch/pickup/deliver/complete/cancel) | 🟡 In progress (this slice) |
 | **P2 Customer** | S4 | AP-PF | Discovery + cart + checkout (place-order) + order history/tracking | 🟡 Partial (discovery+cart done; orders in this slice) |
-| **P2 Customer** | S5 | AP-PF | Checkout + payments (PSP sandbox), address geocode, promo | ⏳ |
-| **P2 Customer** | S6 | AP-PF | Order tracking (realtime), notifications, cancellation/refund | ⏳ |
+| **P2 Customer** | S5 | AP-PF | Checkout + payments (PSP sandbox), address, promo, process-payment, webhook-psp | ✅ Done (code) |
+| **P2 Customer** | S6 | AP-PF | Realtime order tracking, notifications, device tokens, send-notification | ✅ Done (code) |
 | **P3 Merchant** | S7 | AP-PB | Onboarding, menu CRUD, incoming orders, mark ready, analytics | 🟡 Partial (onboarding+menu done; orders in this slice) |
 | **P3 Driver** | S8 | AP-PD | Onboarding, online toggle, job offers, pickup, deliver, earnings | 🟡 Partial (auth only; jobs in this slice) |
 | **P4 Integration** | S9 | all | Cross-app E2E (full order lifecycle across 4 apps) | ⏳ |

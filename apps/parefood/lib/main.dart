@@ -10,8 +10,10 @@ import 'package:auth_feature/auth_feature.dart';
 import 'package:discovery_feature/discovery_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:notifications_feature/notifications_feature.dart';
 import 'package:orders_feature/orders_feature.dart';
 import 'package:pare_data/pare_data.dart';
+import 'package:payments_feature/payments_feature.dart';
 import 'package:profile_feature/profile_feature.dart';
 
 import 'src/app.dart';
@@ -27,7 +29,13 @@ Future<void> main() async {
         discoveryRepositoryProvider.overrideWithValue(
           SupabaseDiscoveryRepository(),
         ),
+        notificationsRepositoryProvider.overrideWithValue(
+          SupabaseNotificationsRepository(),
+        ),
         ordersRepositoryProvider.overrideWithValue(SupabaseOrdersRepository()),
+        paymentsRepositoryProvider.overrideWithValue(
+          SupabasePaymentsRepository(),
+        ),
         profileRepositoryProvider.overrideWithValue(
           SupabaseProfileRepository(),
         ),

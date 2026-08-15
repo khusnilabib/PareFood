@@ -48,9 +48,15 @@ void main() {
       expect(find.byType(NotificationTile), findsNWidgets(2));
       expect(find.text('Pesanan diproses'), findsOneWidget);
       expect(find.text('Pesanan #123 sedang disiapkan.'), findsOneWidget);
-      // Unread rows use the active icon, read rows the outlined one.
-      expect(find.byIcon(Icons.notifications_active), findsOneWidget);
-      expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
+      // Each tile shows the type-specific icon (not a generic bell icon).
+      expect(
+        find.byIcon(IconData(NotificationType.orderPreparing.icon)),
+        findsOneWidget,
+      );
+      expect(
+        find.byIcon(IconData(NotificationType.orderDelivered.icon)),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows the empty state when there are no notifications', (
@@ -141,6 +147,7 @@ void main() {
         title: 'Pesanan diproses',
         body: 'Pesanan #123 sedang disiapkan.',
         createdAt: _createdAt,
+        type: NotificationType.orderPreparing,
       );
 
       final read = notification.copyWith(isRead: true);
@@ -149,6 +156,7 @@ void main() {
       expect(read.title, notification.title);
       expect(read.body, notification.body);
       expect(read.createdAt, notification.createdAt);
+      expect(read.type, notification.type);
       expect(notification.copyWith(), notification);
     });
 
@@ -158,12 +166,14 @@ void main() {
         title: 't',
         body: 'b',
         createdAt: _createdAt,
+        type: NotificationType.system,
       );
       final b = AppNotification(
         id: 'n1',
         title: 't',
         body: 'b',
         createdAt: _createdAt,
+        type: NotificationType.system,
       );
       final c = a.copyWith(isRead: true);
 
@@ -204,6 +214,7 @@ class _FakeNotificationsRepository implements NotificationsRepository {
         title: 'Pesanan diproses',
         body: 'Pesanan #123 sedang disiapkan.',
         createdAt: _createdAt,
+        type: NotificationType.orderPreparing,
       ),
       AppNotification(
         id: 'n2',
@@ -211,10 +222,20 @@ class _FakeNotificationsRepository implements NotificationsRepository {
         body: 'Pesanan #122 sudah diantar.',
         createdAt: DateTime(2026, 8, 5, 19, 5),
         isRead: true,
+        type: NotificationType.orderDelivered,
       ),
     ]);
   }
 
   @override
   Future<void> markRead(String id) async {}
+
+  @override
+  Future<void> markAllRead() async {}
+
+  @override
+  Future<void> registerDeviceToken({
+    required String token,
+    required NotificationPlatform platform,
+  }) async {}
 }

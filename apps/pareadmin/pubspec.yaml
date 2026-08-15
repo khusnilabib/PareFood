@@ -19,6 +19,8 @@ dependencies:
   go_router: ^17.4.0
   orders_feature:
     path: ../../packages/features/orders_feature
+  pare_core:
+    path: ../../packages/core
   pare_data:
     path: ../../packages/data
   pare_design:

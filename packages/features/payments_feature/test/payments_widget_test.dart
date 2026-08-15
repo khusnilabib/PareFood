@@ -78,11 +78,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(PaymentMethodTile), findsNWidgets(4));
-      expect(find.text('QRIS'), findsOneWidget);
-      expect(find.text('Virtual Account'), findsOneWidget);
-      expect(find.text('E-Wallet'), findsOneWidget);
-      expect(find.text('Bayar di Tempat'), findsOneWidget);
+      expect(find.byType(PaymentMethodTile), findsNWidgets(3));
+      expect(find.textContaining('E-Wallet'), findsOneWidget);
+      expect(find.textContaining('Kartu'), findsOneWidget);
+      expect(find.textContaining('Bayar di Tempat'), findsOneWidget);
     });
 
     testWidgets('shows the empty state when no methods are offered', (
@@ -128,25 +127,26 @@ void main() {
       await tester.tap(find.text('Coba lagi'));
       await tester.pumpAndSettle();
 
-      expect(find.byType(PaymentMethodTile), findsNWidgets(4));
+      expect(find.byType(PaymentMethodTile), findsNWidgets(3));
     });
   });
 
-  group('PaymentMethodTile', () {
+  group('PaymentMethod', () {
     test('labels every method in Indonesian', () {
-      expect(const PaymentMethodTile(method: PaymentMethod.qris).label, 'QRIS');
-      expect(
-        const PaymentMethodTile(method: PaymentMethod.virtualAccount).label,
-        'Virtual Account',
-      );
-      expect(
-        const PaymentMethodTile(method: PaymentMethod.ewallet).label,
-        'E-Wallet',
-      );
-      expect(
-        const PaymentMethodTile(method: PaymentMethod.cashOnDelivery).label,
-        'Bayar di Tempat',
-      );
+      expect(PaymentMethod.cashOnDelivery.label, 'Bayar di Tempat (COD)');
+      expect(PaymentMethod.ewallet.label, 'E-Wallet (GoPay/OVO/DANA)');
+      expect(PaymentMethod.card.label, 'Kartu Debit/Kredit');
+    });
+
+    test('fromString round-trips via toWire', () {
+      for (final m in PaymentMethod.values) {
+        expect(PaymentMethod.fromString(m.toWire()), m);
+      }
+    });
+
+    test('fromString falls back to cashOnDelivery for unknown values', () {
+      expect(PaymentMethod.fromString('qris'), PaymentMethod.cashOnDelivery);
+      expect(PaymentMethod.fromString(null), PaymentMethod.cashOnDelivery);
     });
   });
 
@@ -214,4 +214,13 @@ class _FakePaymentsRepository implements PaymentsRepository {
     if (empty) return Future.value(const []);
     return Future.value(PaymentMethod.values);
   }
+
+  @override
+  Future<PromoValidation> validatePromo({
+    required String code,
+    required Money subtotal,
+  }) async => PromoValidation.none;
+
+  @override
+  Future<PaymentIntent?> fetchIntentForOrder(String orderId) async => null;
 }

@@ -15,6 +15,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orders_feature/orders_feature.dart';
 import 'package:profile_feature/profile_feature.dart';
 
+import '../checkout/checkout_page.dart';
+
 /// Bottom-navigation host for the signed-in customer experience.
 class HomeShell extends ConsumerStatefulWidget {
   const HomeShell({super.key});
@@ -141,7 +143,22 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               _openRestaurant(restaurantId, name);
             },
           ),
-          const CartPage(),
+          CartPage(
+            onCheckout: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => CheckoutPage(
+                    onOrderPlaced: (orderId) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Pesanan $orderId dibuat.')),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
           const OrdersPage(),
           const ProfilePage(),
         ],

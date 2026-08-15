@@ -45,6 +45,7 @@ class _FakeNotificationsRepository implements NotificationsRepository {
         title: 'Pesanan diproses',
         body: 'Pesanan #123 sedang disiapkan.',
         createdAt: DateTime(2026, 8, 6, 10, 0),
+        type: NotificationType.orderPreparing,
       ),
       AppNotification(
         id: 'n2',
@@ -52,10 +53,20 @@ class _FakeNotificationsRepository implements NotificationsRepository {
         body: 'Pesanan #122 sudah diantar.',
         createdAt: DateTime(2026, 8, 5, 19, 5),
         isRead: true,
+        type: NotificationType.orderDelivered,
       ),
     ];
   }
 
   @override
   Future<void> markRead(String id) async {}
+
+  @override
+  Future<void> markAllRead() async {}
+
+  @override
+  Future<void> registerDeviceToken({
+    required String token,
+    required NotificationPlatform platform,
+  }) async {}
 }
