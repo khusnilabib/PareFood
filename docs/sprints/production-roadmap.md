@@ -53,9 +53,9 @@ callback-injected write actions to respect MO-R02d).
 | **P2 Customer** | S4 | AP-PF | Discovery + cart + checkout (place-order) + order history/tracking | 🟡 Partial (discovery+cart done; orders in this slice) |
 | **P2 Customer** | S5 | AP-PF | Checkout + payments (PSP sandbox), address, promo, process-payment, webhook-psp | ✅ Done (code) |
 | **P2 Customer** | S6 | AP-PF | Realtime order tracking, notifications, device tokens, send-notification | ✅ Done (code) |
-| **P3 Merchant** | S7 | AP-PB | Onboarding, menu CRUD, incoming orders, mark ready, analytics | 🟡 Partial (onboarding+menu done; orders in this slice) |
-| **P3 Driver** | S8 | AP-PD | Onboarding, online toggle, job offers, pickup, deliver, earnings | 🟡 Partial (auth only; jobs in this slice) |
-| **P4 Integration** | S9 | all | Cross-app E2E (full order lifecycle across 4 apps) | ⏳ |
+| **P3 Merchant** | S7 | AP-PB | Onboarding, menu CRUD, incoming orders (realtime), accept/decline/mark-ready wired | ✅ Done (code) |
+| **P3 Driver** | S8 | AP-PD | Online toggle, job accept/decline/pickup/deliver wired, earnings | ✅ Done (code) |
+| **P4 Integration** | S9 | all | Cross-app E2E (full order lifecycle across 4 apps) | ✅ Done (code) |
 | **P4 Admin** | S10 | AP-PA | Order board, force-cancel, user-admin, audit | 🟡 Partial (placeholder; board in this slice) |
 | **P4 Finance** | S11 | AP-PA/AP-PB | Settlements, payouts, reconciliation | ⏳ |
 | **P5 Hardening** | S12 | all | Perf, security scan, pen-test prep, monitoring | ⏳ |

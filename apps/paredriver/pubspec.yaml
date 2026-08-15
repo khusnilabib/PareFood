@@ -27,6 +27,7 @@ dependencies:
     path: ../../packages/design
   profile_feature:
     path: ../../packages/features/profile_feature
+  supabase_flutter: ^2.9.5
 
 dev_dependencies:
   flutter_lints: any
