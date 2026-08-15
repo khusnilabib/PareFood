@@ -39,12 +39,12 @@ void main() {
         await tester.pumpWidget(signInApp(_FakeAuthRepository()));
 
         await tester.enterText(emailField(), 'nope');
-        await tester.enterText(passwordField(), 'short');
+        await tester.enterText(passwordField(), 'ab');
         await tester.tap(find.byType(FilledButton));
         await tester.pump();
 
         expect(find.text('Format email tidak valid.'), findsOneWidget);
-        expect(find.text('Minimal 8 karakter.'), findsOneWidget);
+        expect(find.text('Minimal 6 karakter.'), findsOneWidget);
       },
     );
 
@@ -71,7 +71,7 @@ void main() {
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
 
-      expect(find.text('Gagal masuk. Coba lagi.'), findsOneWidget);
+      expect(find.textContaining('Gagal masuk'), findsOneWidget);
     });
 
     testWidgets('disables the submit button while signing in', (tester) async {
@@ -290,7 +290,7 @@ void main() {
 
       expect(repo.signUpEmail, 'a@b.com');
       expect(
-        find.text('Pendaftaran berhasil. Cek email Anda untuk verifikasi.'),
+        find.text('Pendaftaran berhasil. Silakan masuk.'),
         findsOneWidget,
       );
     });
@@ -355,7 +355,7 @@ void main() {
       completer.complete(AuthOutcome.success);
       await tester.pumpAndSettle();
       expect(
-        find.text('Pendaftaran berhasil. Cek email Anda untuk verifikasi.'),
+        find.text('Pendaftaran berhasil. Silakan masuk.'),
         findsOneWidget,
       );
     });

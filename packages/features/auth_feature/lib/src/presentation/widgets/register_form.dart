@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pare_core/pare_core.dart';
 import 'package:pare_design/pare_design.dart';
 import 'package:pare_util/pare_util.dart';
 
@@ -57,18 +58,28 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
       final outcome = await useCase.call(email: email, password: password);
       if (!mounted) return;
       final message = switch (outcome) {
-        AuthOutcome.success =>
-          'Pendaftaran berhasil. Cek email Anda untuk verifikasi.',
+        AuthOutcome.success => 'Pendaftaran berhasil. Silakan masuk.',
         AuthOutcome.emailInUse => 'Email sudah terdaftar.',
         _ => 'Pendaftaran gagal. Coba lagi.',
       };
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
-    } on Object {
+    } on PareException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pendaftaran gagal. Coba lagi.')),
+        SnackBar(
+          content: Text(e.message),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    } on Object catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pendaftaran gagal: $e'),
+          duration: const Duration(seconds: 5),
+        ),
       );
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -97,7 +108,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
             obscureText: true,
             validator: (value) =>
                 requiredValidator(value) ??
-                minLengthValidator(value, minLength: 8),
+                minLengthValidator(value, minLength: 6),
           ),
           const SizedBox(height: PfSpacing.md),
           TextFormField(

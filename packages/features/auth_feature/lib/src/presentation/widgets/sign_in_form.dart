@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pare_core/pare_core.dart';
 import 'package:pare_design/pare_design.dart';
 import 'package:pare_util/pare_util.dart';
 
@@ -43,11 +44,23 @@ class _SignInFormState extends ConsumerState<SignInForm> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Berhasil masuk.')));
-    } on Object {
+    } on PareException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Gagal masuk. Coba lagi.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    } on Object catch (e) {
+      if (!mounted) return;
+      // Show the actual error so the user can diagnose (was previously hidden).
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal masuk: $e'),
+          duration: const Duration(seconds: 5),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -72,7 +85,9 @@ class _SignInFormState extends ConsumerState<SignInForm> {
             controller: _passwordController,
             decoration: const InputDecoration(labelText: 'Kata sandi'),
             obscureText: true,
-            validator: (value) => minLengthValidator(value, minLength: 8),
+            validator: (value) =>
+                requiredValidator(value) ??
+                minLengthValidator(value, minLength: 6),
           ),
           const SizedBox(height: PfSpacing.lg),
           PfButton(
