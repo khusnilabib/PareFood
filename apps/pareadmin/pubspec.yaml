@@ -13,6 +13,8 @@ resolution: workspace
 dependencies:
   auth_feature:
     path: ../../packages/features/auth_feature
+  finance_feature:
+    path: ../../packages/features/finance_feature
   flutter:
     sdk: flutter
   flutter_riverpod: ^3.3.2
@@ -25,6 +27,7 @@ dependencies:
     path: ../../packages/data
   pare_design:
     path: ../../packages/design
+  supabase_flutter: ^2.9.5
 
 dev_dependencies:
   flutter_lints: any

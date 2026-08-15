@@ -6,6 +6,7 @@ import 'package:app_pareadmin/src/app.dart';
 import 'package:app_pareadmin/src/presentation/access_denied_page.dart';
 import 'package:app_pareadmin/src/presentation/admin_dashboard_page.dart';
 import 'package:auth_feature/auth_feature.dart';
+import 'package:finance_feature/finance_feature.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:orders_feature/orders_feature.dart';
@@ -32,6 +33,7 @@ Future<ProviderContainer> _pumpApp(
     overrides: [
       authSessionProvider.overrideWith((ref) => Stream.value(session)),
       authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+      financeRepositoryProvider.overrideWithValue(_EmptyFinanceRepository()),
       ordersRepositoryProvider.overrideWithValue(_EmptyOrdersRepository()),
     ],
   );
@@ -72,6 +74,51 @@ class _EmptyOrdersRepository implements OrdersRepository {
   }
 }
 
+class _EmptyFinanceRepository implements FinanceRepository {
+  @override
+  Future<List<Settlement>> fetchSettlements({
+    String? restaurantId,
+    DateTime? from,
+    DateTime? to,
+  }) async => const [];
+
+  @override
+  Future<void> approveSettlements(List<String> settlementIds) async {}
+
+  @override
+  Future<List<DriverPayout>> fetchPayouts({
+    String? driverId,
+    DateTime? from,
+    DateTime? to,
+  }) async => const [];
+
+  @override
+  Future<ReconciliationReport> fetchReconciliation({
+    required DateTime from,
+    required DateTime to,
+  }) async => ReconciliationReport(
+    periodStart: from,
+    periodEnd: to,
+    grossOrderTotal: Money.fromRupiah(0),
+    commissionCollected: Money.fromRupiah(0),
+    driverFaresPaid: Money.fromRupiah(0),
+    restaurantSettlements: Money.fromRupiah(0),
+    codCollected: Money.fromRupiah(0),
+    codRemitted: Money.fromRupiah(0),
+    mismatchCount: 0,
+  );
+
+  @override
+  Future<PlatformKpis> fetchKpis() async => PlatformKpis(
+    ordersToday: 0,
+    gmvToday: Money.fromRupiah(0),
+    activeMerchants: 0,
+    activeDrivers: 0,
+    pendingSettlements: Money.fromRupiah(0),
+    pendingPayouts: Money.fromRupiah(0),
+  );
+}
+
 void main() {
   testWidgets('redirects signed-out visitors to the sign-in page', (
     tester,
@@ -86,7 +133,7 @@ void main() {
     await _pumpApp(tester, session: _admin);
 
     expect(find.byType(AdminDashboardPage), findsOneWidget);
-    expect(find.text('Papan Pesanan'), findsOneWidget);
+    expect(find.text('Dashboard'), findsNWidgets(2));
     expect(find.byType(SignInPage), findsNothing);
   });
 

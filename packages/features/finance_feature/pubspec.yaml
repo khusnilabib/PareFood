@@ -1,0 +1,30 @@
+name: finance_feature
+description: >-
+  PareFood finance feature: payment methods, idempotent charge creation and
+  payment screens (PF-DOC-11 §3.5 (finance)). Repositories delegate to pare_data.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.3.2
+  pare_core:
+    path: ../../core
+  pare_data:
+    path: ../../data
+  pare_design:
+    path: ../../design
+  supabase_flutter: ^2.9.5
+
+dev_dependencies:
+  flutter_lints: any
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

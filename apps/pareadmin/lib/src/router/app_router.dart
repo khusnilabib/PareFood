@@ -11,7 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../presentation/access_denied_page.dart';
+import '../presentation/admin_audit_page.dart';
 import '../presentation/admin_dashboard_page.dart';
+import '../presentation/admin_finance_page.dart';
+import '../presentation/admin_orders_page.dart';
 
 const _loginPath = '/login';
 const _accessDeniedPath = '/access-denied';
@@ -57,6 +60,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       GoRoute(path: '/', builder: (_, _) => const AdminDashboardPage()),
+      GoRoute(path: '/orders', builder: (_, _) => const AdminOrdersPage()),
+      GoRoute(path: '/finance', builder: (_, _) => const AdminFinancePage()),
+      GoRoute(path: '/audit', builder: (_, _) => const AdminAuditPage()),
       GoRoute(path: _loginPath, builder: (_, _) => const SignInPage()),
       GoRoute(
         path: _accessDeniedPath,

@@ -7,6 +7,7 @@
 library;
 
 import 'package:auth_feature/auth_feature.dart';
+import 'package:finance_feature/finance_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orders_feature/orders_feature.dart';
@@ -22,6 +23,9 @@ Future<void> main() async {
     ProviderScope(
       overrides: [
         authRepositoryProvider.overrideWithValue(SupabaseAuthRepository()),
+        financeRepositoryProvider.overrideWithValue(
+          SupabaseFinanceRepository(),
+        ),
         ordersRepositoryProvider.overrideWithValue(SupabaseOrdersRepository()),
       ],
       child: const PareAdminApp(),
