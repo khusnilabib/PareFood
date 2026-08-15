@@ -4,6 +4,8 @@ library;
 import 'dart:typed_data';
 
 import 'package:discovery_feature/discovery_feature.dart';
+import 'package:orders_feature/orders_feature.dart';
+import 'package:pare_core/pare_core.dart';
 import 'package:profile_feature/profile_feature.dart';
 
 /// Empty discovery results; enough to exercise the FL-R07 empty state.
@@ -17,6 +19,37 @@ class FakeDiscoveryRepository implements DiscoveryRepository {
 
   @override
   Future<RestaurantDetail?> restaurantDetail(String restaurantId) async => null;
+}
+
+/// Empty orders; enough to exercise the FL-R07 empty state.
+class FakeOrdersRepository implements OrdersRepository {
+  @override
+  Future<List<OrderSummary>> fetchForCustomer() async => const [];
+
+  @override
+  Future<List<OrderSummary>> fetchForRestaurant({
+    String? restaurantId,
+    Set<OrderStatus>? statuses,
+  }) async => const [];
+
+  @override
+  Future<List<DeliveryJob>> fetchForDriver() async => const [];
+
+  @override
+  Future<List<OrderSummary>> fetchAll({
+    Set<OrderStatus>? statuses,
+    String? search,
+  }) async => const [];
+
+  @override
+  Future<OrderSummary> fetchById(String id) async {
+    throw PareNotFoundException('Order $id not found.');
+  }
+
+  @override
+  Future<OrderDetail> fetchDetail(String id) async {
+    throw PareNotFoundException('Order $id not found.');
+  }
 }
 
 /// Returns a fixed profile; other operations are not exercised here.

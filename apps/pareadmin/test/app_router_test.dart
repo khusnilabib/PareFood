@@ -8,6 +8,8 @@ import 'package:app_pareadmin/src/presentation/admin_dashboard_page.dart';
 import 'package:auth_feature/auth_feature.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:orders_feature/orders_feature.dart';
+import 'package:pare_core/pare_core.dart';
 
 import 'fakes.dart';
 
@@ -30,6 +32,7 @@ Future<ProviderContainer> _pumpApp(
     overrides: [
       authSessionProvider.overrideWith((ref) => Stream.value(session)),
       authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+      ordersRepositoryProvider.overrideWithValue(_EmptyOrdersRepository()),
     ],
   );
   addTearDown(container.dispose);
@@ -41,6 +44,32 @@ Future<ProviderContainer> _pumpApp(
   );
   await tester.pumpAndSettle();
   return container;
+}
+
+class _EmptyOrdersRepository implements OrdersRepository {
+  @override
+  Future<List<OrderSummary>> fetchForCustomer() async => const [];
+  @override
+  Future<List<OrderSummary>> fetchForRestaurant({
+    String? restaurantId,
+    Set<OrderStatus>? statuses,
+  }) async => const [];
+  @override
+  Future<List<DeliveryJob>> fetchForDriver() async => const [];
+  @override
+  Future<List<OrderSummary>> fetchAll({
+    Set<OrderStatus>? statuses,
+    String? search,
+  }) async => const [];
+  @override
+  Future<OrderSummary> fetchById(String id) async {
+    throw PareNotFoundException('Order $id not found.');
+  }
+
+  @override
+  Future<OrderDetail> fetchDetail(String id) async {
+    throw PareNotFoundException('Order $id not found.');
+  }
 }
 
 void main() {
@@ -57,7 +86,7 @@ void main() {
     await _pumpApp(tester, session: _admin);
 
     expect(find.byType(AdminDashboardPage), findsOneWidget);
-    expect(find.text('Konsol admin — Sprint 4'), findsOneWidget);
+    expect(find.text('Papan Pesanan'), findsOneWidget);
     expect(find.byType(SignInPage), findsNothing);
   });
 

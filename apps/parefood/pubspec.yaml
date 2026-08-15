@@ -24,6 +24,10 @@ dependencies:
     path: ../../packages/data
   pare_design:
     path: ../../packages/design
+  menu_feature:
+    path: ../../packages/features/menu_feature
+  orders_feature:
+    path: ../../packages/features/orders_feature
   profile_feature:
     path: ../../packages/features/profile_feature
 

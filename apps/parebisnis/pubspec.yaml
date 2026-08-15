@@ -21,6 +21,8 @@ dependencies:
     path: ../../packages/features/menu_feature
   merchant_feature:
     path: ../../packages/features/merchant_feature
+  orders_feature:
+    path: ../../packages/features/orders_feature
   pare_core:
     path: ../../packages/core
   pare_data:

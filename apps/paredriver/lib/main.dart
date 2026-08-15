@@ -9,6 +9,7 @@ library;
 import 'package:auth_feature/auth_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orders_feature/orders_feature.dart';
 import 'package:pare_data/pare_data.dart';
 import 'package:profile_feature/profile_feature.dart';
 
@@ -22,6 +23,7 @@ Future<void> main() async {
     ProviderScope(
       overrides: [
         authRepositoryProvider.overrideWithValue(SupabaseAuthRepository()),
+        ordersRepositoryProvider.overrideWithValue(SupabaseOrdersRepository()),
         profileRepositoryProvider.overrideWithValue(
           SupabaseProfileRepository(),
         ),

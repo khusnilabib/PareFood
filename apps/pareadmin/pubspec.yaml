@@ -17,6 +17,8 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^3.3.2
   go_router: ^17.4.0
+  orders_feature:
+    path: ../../packages/features/orders_feature
   pare_data:
     path: ../../packages/data
   pare_design:

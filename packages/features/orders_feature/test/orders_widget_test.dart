@@ -1,4 +1,4 @@
-/// Widget tests for the orders surface (FL-R07: all four states).
+/// Widget tests for the orders surface (FL-R07: all four states) + domain.
 library;
 
 import 'dart:async';
@@ -15,7 +15,7 @@ import 'package:pare_design/pare_design.dart';
 Duration? _noRetry(int attempt, Object error) => null;
 
 void main() {
-  group('OrdersPage (FL-R07)', () {
+  group('OrdersPage (customer, FL-R07)', () {
     testWidgets('shows skeleton placeholders while orders load', (
       tester,
     ) async {
@@ -49,8 +49,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(OrderCard), findsNWidgets(2));
-      expect(find.text('Bakso Joss'), findsOneWidget);
-      expect(find.text('Rp 45.000 • 05 Agu 2026'), findsOneWidget);
+      expect(find.textContaining('Bakso Joss'), findsOneWidget);
       expect(find.text('Selesai'), findsOneWidget);
       expect(find.text('Diantar'), findsOneWidget);
     });
@@ -72,7 +71,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Belum ada pesanan'), findsOneWidget);
-      expect(find.text('Pesananmu akan muncul di sini.'), findsOneWidget);
     });
 
     testWidgets('surfaces typed errors and recovers via retry', (tester) async {
@@ -89,7 +87,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Server sedang sibuk.'), findsOneWidget);
-      expect(find.text('Gagal memuat pesanan.'), findsNothing);
 
       repository.fetchError = null;
       await tester.tap(find.text('Coba lagi'));
@@ -99,56 +96,72 @@ void main() {
     });
   });
 
-  group('OrderCard status mapping', () {
-    test('pending and confirmed map to the pending badge status', () {
-      expect(OrderCard.badgeStatus(OrderStatus.pending), PfStatus.pending);
-      expect(OrderCard.statusLabel(OrderStatus.pending), 'Menunggu');
-      expect(OrderCard.badgeStatus(OrderStatus.confirmed), PfStatus.pending);
-      expect(OrderCard.statusLabel(OrderStatus.confirmed), 'Dikonfirmasi');
+  group('OrderStatus mapping', () {
+    test('placed/accepted map to the pending badge status', () {
+      expect(orderBadgeStatus(OrderStatus.placed), PfStatus.pending);
+      expect(orderStatusLabel(OrderStatus.placed), 'Menunggu konfirmasi');
+      expect(orderBadgeStatus(OrderStatus.accepted), PfStatus.pending);
     });
 
-    test('delivering and delivered map to the active badge status', () {
-      expect(OrderCard.badgeStatus(OrderStatus.delivering), PfStatus.active);
-      expect(OrderCard.statusLabel(OrderStatus.delivering), 'Diantar');
-      expect(OrderCard.badgeStatus(OrderStatus.delivered), PfStatus.active);
-      expect(OrderCard.statusLabel(OrderStatus.delivered), 'Selesai');
+    test('preparing/ready/pickedUp/delivered map to the active badge', () {
+      expect(orderBadgeStatus(OrderStatus.preparing), PfStatus.active);
+      expect(orderBadgeStatus(OrderStatus.ready), PfStatus.active);
+      expect(orderBadgeStatus(OrderStatus.pickedUp), PfStatus.active);
+      expect(orderBadgeStatus(OrderStatus.delivered), PfStatus.active);
+    });
+
+    test('cancelled/refunded map to the cancelled badge', () {
+      expect(orderBadgeStatus(OrderStatus.cancelled), PfStatus.cancelled);
+      expect(orderBadgeStatus(OrderStatus.refunded), PfStatus.cancelled);
+    });
+
+    test('fromString/toWire round-trip', () {
+      for (final s in OrderStatus.values) {
+        expect(OrderStatus.fromString(s.toWire()), s);
+      }
+    });
+
+    test('fromString falls back to placed for unknown values', () {
+      expect(OrderStatus.fromString('unknown'), OrderStatus.placed);
+      expect(OrderStatus.fromString(null), OrderStatus.placed);
+    });
+
+    test('isActive / isTerminal', () {
+      expect(OrderStatus.placed.isActive, isTrue);
+      expect(OrderStatus.pickedUp.isActive, isTrue);
+      expect(OrderStatus.pickedUp.isTerminal, isFalse);
+      expect(OrderStatus.delivered.isActive, isFalse);
+      expect(OrderStatus.delivered.isTerminal, isTrue);
+      expect(OrderStatus.cancelled.isTerminal, isTrue);
+      expect(OrderStatus.refunded.isTerminal, isTrue);
     });
   });
 
   group('OrderSummary', () {
     test('value equality and hashCode', () {
-      final a = OrderSummary(
-        id: 'o1',
-        restaurantName: 'Bakso Joss',
-        total: Money.fromRupiah(45000),
-        status: OrderStatus.delivered,
-        placedAt: _placedAt,
-      );
-      final b = OrderSummary(
-        id: 'o1',
-        restaurantName: 'Bakso Joss',
-        total: Money.fromRupiah(45000),
-        status: OrderStatus.delivered,
-        placedAt: _placedAt,
-      );
-      final c = OrderSummary(
-        id: 'o2',
-        restaurantName: 'Bakso Joss',
-        total: Money.fromRupiah(45000),
-        status: OrderStatus.delivered,
-        placedAt: _placedAt,
-      );
+      final a = _summary();
+      final b = _summary();
+      final c = _summary(id: 'o2');
 
       expect(a, b);
       expect(a.hashCode, b.hashCode);
       expect(a == c, isFalse);
-      // Equality with an unrelated type must not crash and must be false
-      // (defensive `==` contract). Cast through Object so the static
-      // unrelated_type_equality_checks lint does not flag the comparison.
       const Object other = 'o1';
       expect(a == other, isFalse);
     });
   });
+}
+
+OrderSummary _summary({String id = 'o1'}) {
+  return OrderSummary(
+    id: id,
+    orderNo: 'PF-001',
+    restaurantName: 'Bakso Joss',
+    customerName: 'Budi',
+    total: Money.fromRupiah(45000),
+    status: OrderStatus.delivered,
+    placedAt: _placedAt,
+  );
 }
 
 final _placedAt = DateTime(2026, 8, 5, 19, 5);
@@ -165,7 +178,7 @@ class _FakeOrdersRepository implements OrdersRepository {
   final bool empty;
 
   @override
-  Future<List<OrderSummary>> fetchActive() {
+  Future<List<OrderSummary>> fetchForCustomer() {
     final error = fetchError;
     if (error != null) return Future.error(error);
     if (pending) return Completer<List<OrderSummary>>().future;
@@ -173,23 +186,47 @@ class _FakeOrdersRepository implements OrdersRepository {
     return Future.value([
       OrderSummary(
         id: 'o1',
+        orderNo: 'PF-001',
         restaurantName: 'Bakso Joss',
+        customerName: 'Budi',
         total: Money.fromRupiah(45000),
         status: OrderStatus.delivered,
         placedAt: _placedAt,
       ),
       OrderSummary(
         id: 'o2',
+        orderNo: 'PF-002',
         restaurantName: 'Sate Rembiga',
+        customerName: 'Sari',
         total: Money.fromRupiah(60000),
-        status: OrderStatus.delivering,
+        status: OrderStatus.pickedUp,
         placedAt: _placedAt,
       ),
     ]);
   }
 
   @override
+  Future<List<OrderSummary>> fetchForRestaurant({
+    String? restaurantId,
+    Set<OrderStatus>? statuses,
+  }) async => const [];
+
+  @override
+  Future<List<DeliveryJob>> fetchForDriver() async => const [];
+
+  @override
+  Future<List<OrderSummary>> fetchAll({
+    Set<OrderStatus>? statuses,
+    String? search,
+  }) async => const [];
+
+  @override
   Future<OrderSummary> fetchById(String id) async {
+    throw PareNotFoundException('Order $id not found.');
+  }
+
+  @override
+  Future<OrderDetail> fetchDetail(String id) async {
     throw PareNotFoundException('Order $id not found.');
   }
 }

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:menu_feature/menu_feature.dart';
 import 'package:merchant_feature/merchant_feature.dart';
+import 'package:orders_feature/orders_feature.dart';
 import 'package:pare_data/pare_data.dart';
 import 'package:profile_feature/profile_feature.dart';
 
@@ -26,6 +27,7 @@ Future<void> main() async {
       overrides: [
         authRepositoryProvider.overrideWithValue(SupabaseAuthRepository()),
         menuRepositoryProvider.overrideWithValue(SupabaseMenuRepository()),
+        ordersRepositoryProvider.overrideWithValue(SupabaseOrdersRepository()),
         profileRepositoryProvider.overrideWithValue(
           SupabaseProfileRepository(),
         ),

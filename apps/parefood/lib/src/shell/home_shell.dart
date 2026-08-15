@@ -12,6 +12,7 @@ import 'package:cart_feature/cart_feature.dart';
 import 'package:discovery_feature/discovery_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orders_feature/orders_feature.dart';
 import 'package:profile_feature/profile_feature.dart';
 
 /// Bottom-navigation host for the signed-in customer experience.
@@ -141,6 +142,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
             },
           ),
           const CartPage(),
+          const OrdersPage(),
           const ProfilePage(),
         ],
       ),
@@ -165,6 +167,11 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               child: const Icon(Icons.shopping_cart),
             ),
             label: 'Keranjang',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long),
+            label: 'Pesanan',
           ),
           const NavigationDestination(
             icon: Icon(Icons.person_outline),
