@@ -1,13 +1,13 @@
 name: Android build & sign
 
-# Sprint 1 task 12 (s1-release-setup): produce an installable APK from CI.
-# Keystores are NEVER committed (PF-DOC-19, PF-DOC-30). When the keystore
-# secret is absent, the workflow builds a debug-signed APK (installable for
-# testing) so you get a usable .apk on every run.
+# Produce installable APKs from CI. Builds all 4 apps in release mode with
+# production Supabase config (URL + anon key hardcoded — anon key is public).
+# Without a keystore secret, release builds use the debug signing key (still
+# installable on any phone for testing).
 #
 # Triggers:
-#   - push to main (after pr-validation is green) — builds parefood by default
-#   - manual dispatch — choose which app(s) to build and release/debug flavor
+#   - push to main — builds all 4 apps in release mode
+#   - manual dispatch — choose app(s) and build mode
 on:
   push:
     branches: [main]
@@ -20,7 +20,7 @@ on:
       app:
         description: 'App to build (parefood | parebisnis | paredriver | all)'
         required: true
-        default: 'parefood'
+        default: 'all'
         type: choice
         options:
           - parefood
@@ -28,13 +28,13 @@ on:
           - paredriver
           - all
       build_mode:
-        description: 'Build mode (release needs keystore secrets; debug is always installable)'
+        description: 'Build mode (release = production-ready; debug = faster build)'
         required: true
-        default: 'debug'
+        default: 'release'
         type: choice
         options:
-          - debug
           - release
+          - debug
 
 jobs:
   build:
@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: ${{ fromJSON(github.event_name == 'workflow_dispatch' && (github.event.inputs.app == 'all' && '["parefood","parebisnis","paredriver"]' || format('["{0}"]', github.event.inputs.app)) || '["parefood"]') }}
+        app: ${{ fromJSON(github.event_name == 'workflow_dispatch' && (github.event.inputs.app == 'all' && '["parefood","parebisnis","paredriver"]' || format('["{0}"]', github.event.inputs.app)) || '["parefood","parebisnis","paredriver"]') }}
 
     steps:
       - name: Checkout
@@ -74,26 +74,18 @@ jobs:
       - name: Quality gate (format check + analyze)
         run: melos run format && melos run analyze
 
-      - name: Decode signing keystore (only for release mode)
-        if: github.event.inputs.build_mode != 'release' || github.event_name != 'workflow_dispatch'
+      - name: Decode signing keystore (only when secret is set)
         id: keystore_check
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          # Default path on push: use debug build (no keystore needed) so the
-          # APK is always installable. On manual dispatch, release mode
-          # requires the keystore; debug mode does not.
-          MODE="${{ github.event.inputs.build_mode }}"
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "$MODE" = "release" ]; then
-            if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
-              echo "::error::Release mode requires ANDROID_KEYSTORE_BASE64 secret. Re-run with debug mode or add the secret."
-              exit 1
-            fi
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
             echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > ${{ github.workspace }}/release.keystore
             echo "has_keystore=true" >> "$GITHUB_OUTPUT"
+            echo "Keystore found — will sign with production key."
           else
             echo "has_keystore=false" >> "$GITHUB_OUTPUT"
-            echo "Building debug APK (installable for testing, no signing secret required)."
+            echo "No keystore secret — release APK will use debug signing (still installable for testing)."
           fi
 
       - name: Build APK
@@ -102,35 +94,35 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
-          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
-          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
         run: |
           APP="apps/${{ matrix.app }}"
-          MODE="${{ github.event.inputs.build_mode }}"
+          MODE="${{ github.event.inputs.build_mode || 'release' }}"
 
-          # dart-define: pass staging secrets if present, else rely on the
-          # dev defaults baked into env.dart (DEP-R06 fallback).
-          DEFINES=""
-          if [ -n "$STAGING_SUPABASE_URL" ]; then
-            DEFINES="$DEFINES --dart-define=SUPABASE_URL=$STAGING_SUPABASE_URL"
-          fi
-          if [ -n "$STAGING_SUPABASE_ANON_KEY" ]; then
-            DEFINES="$DEFINES --dart-define=SUPABASE_ANON_KEY=$STAGING_SUPABASE_ANON_KEY"
-          fi
-          if [ -n "$DEFINES" ]; then
-            DEFINES="$DEFINES --dart-define=PARE_ENV=staging"
-          fi
+          # Production Supabase config (anon key is public — safe to hardcode).
+          # This connects the app to the live PareFood backend.
+          SUPABASE_URL="https://mxmmxyagnsnzcrcsfxlh.supabase.co"
+          SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14bW14eWFnbnNuemNyY3NmeGxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNjY2MDIsImV4cCI6MjEwMTg0MjYwMn0.Q_PrQ7uGD2XE6Mo3oPpjzjlFakM60RwSV3PphpSxHG8"
 
-          if [ "${{ steps.keystore_check.outputs.has_keystore }}" = "true" ]; then
+          DEFINES="--dart-define=PARE_ENV=prod"
+          DEFINES="$DEFINES --dart-define=SUPABASE_URL=$SUPABASE_URL"
+          DEFINES="$DEFINES --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+
+          if [ "$MODE" = "release" ]; then
             echo "Building RELEASE APK for $APP"
-            (cd "$APP" && flutter build apk --release \
-              $DEFINES \
-              --keystore "$KEYSTORE_PATH" \
-              --store-password "$ANDROID_STORE_PASSWORD" \
-              --key-password "$ANDROID_KEY_PASSWORD" \
-              --keystore-key-alias "$ANDROID_KEY_ALIAS")
+            if [ "${{ steps.keystore_check.outputs.has_keystore }}" = "true" ]; then
+              (cd "$APP" && flutter build apk --release \
+                $DEFINES \
+                --keystore "$KEYSTORE_PATH" \
+                --store-password "$ANDROID_STORE_PASSWORD" \
+                --key-password "$ANDROID_KEY_PASSWORD" \
+                --keystore-key-alias "$ANDROID_KEY_ALIAS")
+            else
+              # Release mode without keystore: Flutter signs with debug key
+              # (still installable on any phone for testing).
+              (cd "$APP" && flutter build apk --release $DEFINES)
+            fi
           else
-            echo "Building DEBUG APK for $APP (signed with the debug key)"
+            echo "Building DEBUG APK for $APP"
             (cd "$APP" && flutter build apk --debug $DEFINES)
           fi
 
