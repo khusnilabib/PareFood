@@ -45,6 +45,24 @@ final requestPasswordResetProvider = Provider<RequestPasswordReset>((ref) {
   return RequestPasswordReset(ref.watch(authRepositoryProvider));
 });
 
+/// Fetches every role the signed-in user holds (FR-AUTH-006).
+final fetchRolesUseCaseProvider = Provider<FetchRoles>((ref) {
+  return FetchRoles(ref.watch(authRepositoryProvider));
+});
+
+/// Switches the active role (FR-AUTH-006).
+final switchRoleUseCaseProvider = Provider<SwitchRole>((ref) {
+  return SwitchRole(ref.watch(authRepositoryProvider));
+});
+
+/// The full set of roles the signed-in user holds. Hydrated after sign-in
+/// by the app shell; falls back to the active role until populated.
+final userRolesProvider = FutureProvider<List<String>>((ref) {
+  // Re-run when the session changes.
+  ref.watch(authSessionProvider);
+  return ref.watch(fetchRolesUseCaseProvider).call();
+});
+
 /// Ends the current session (FR-AUTH-006). Returns a callable (not a cached
 /// [FutureProvider]) so sign-out can be retried after transient failures.
 final signOutProvider = Provider<Future<void> Function()>((ref) {

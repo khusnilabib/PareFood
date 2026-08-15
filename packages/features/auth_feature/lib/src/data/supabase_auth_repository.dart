@@ -72,6 +72,16 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<List<String>> fetchRoles() {
+    return _dataSource.fetchRoles();
+  }
+
+  @override
+  Future<void> switchRole(String role) {
+    return _dataSource.switchRole(role);
+  }
+
+  @override
   Future<void> signOut() => _dataSource.signOut();
 
   AuthSession _toSession(AuthSessionDto dto) {
@@ -80,6 +90,9 @@ class SupabaseAuthRepository implements AuthRepository {
       email: dto.email,
       phone: dto.phone,
       role: dto.role,
+      // roles defaults to [role] until fetchRoles() enriches it; the app
+      // shell hydrates roles after sign-in.
+      roles: [dto.role],
     );
   }
 }

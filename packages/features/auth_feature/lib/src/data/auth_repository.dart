@@ -44,6 +44,14 @@ abstract interface class AuthRepository {
   /// subtypes on failure.
   Future<void> requestPasswordReset(String email);
 
+  /// Fetches every role the signed-in user holds (FR-AUTH-006).
+  Future<List<String>> fetchRoles();
+
+  /// Switches the active role to [role] (FR-AUTH-006). The role must be in
+  /// the user's held set; throws `PareException` otherwise. The next session
+  /// emission carries the new active role.
+  Future<void> switchRole(String role);
+
   /// Ends the session.
   Future<void> signOut();
 }

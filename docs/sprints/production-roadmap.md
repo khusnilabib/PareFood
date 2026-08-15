@@ -48,7 +48,7 @@ callback-injected write actions to respect MO-R02d).
 | Phase | Sprint | Apps touched | Deliverable | Status |
 |---|---|---|---|---|
 | **P0 Foundations** | S1 | — | Monorepo, CI, design tokens, DB migrations, edge function skeletons | ✅ Done |
-| **P1 Backend core** | S2 | — | Auth end-to-end (staging Supabase), hot indexes (0010) | ⏳ Next after this slice |
+| **P1 Backend core** | S2 | — | Multi-role (FR-AUTH-006), hot indexes (0010), user_roles (0011) | ✅ Done (code) |
 | **P1 Backend core** | S3 | — | Order-lifecycle edge functions (place/accept/ready/dispatch/pickup/deliver/complete/cancel) | 🟡 In progress (this slice) |
 | **P2 Customer** | S4 | AP-PF | Discovery + cart + checkout (place-order) + order history/tracking | 🟡 Partial (discovery+cart done; orders in this slice) |
 | **P2 Customer** | S5 | AP-PF | Checkout + payments (PSP sandbox), address geocode, promo | ⏳ |

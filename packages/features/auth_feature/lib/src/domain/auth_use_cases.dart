@@ -103,3 +103,18 @@ class RequestPasswordReset {
     return _repository.requestPasswordReset(email);
   }
 }
+
+/// Fetches every role the signed-in user holds (FR-AUTH-006).
+class FetchRoles {
+  const FetchRoles(this._repository);
+  final AuthRepository _repository;
+  Future<List<String>> call() => _repository.fetchRoles();
+}
+
+/// Switches the active role (FR-AUTH-006). The role must be held by the user;
+/// the repository throws `PareAuthException` otherwise.
+class SwitchRole {
+  const SwitchRole(this._repository);
+  final AuthRepository _repository;
+  Future<void> call(String role) => _repository.switchRole(role);
+}

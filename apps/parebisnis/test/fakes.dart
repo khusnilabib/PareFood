@@ -43,6 +43,12 @@ class FakeAuthRepository implements AuthRepository {
   Future<void> signOut() async {
     signOutCount++;
   }
+
+  @override
+  Future<List<String>> fetchRoles() async => ['business'];
+
+  @override
+  Future<void> switchRole(String role) async {}
 }
 
 /// Fixed list of owned restaurants; empty by default (onboarding path).

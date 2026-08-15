@@ -23,4 +23,5 @@ export 'src/presentation/pages/sign_in_page.dart';
 export 'src/presentation/widgets/forgot_password_form.dart';
 export 'src/presentation/widgets/phone_sign_in_form.dart';
 export 'src/presentation/widgets/register_form.dart';
+export 'src/presentation/widgets/role_switcher.dart';
 export 'src/presentation/widgets/sign_in_form.dart';

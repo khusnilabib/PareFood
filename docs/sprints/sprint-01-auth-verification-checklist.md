@@ -95,3 +95,40 @@ checklist is then referenced from `sprint-02-plan.md` as the auth-readiness gate
 - Deep links deferred (NV-R01).
 - `user_roles` multi-role table is post-MVP (FR-AUTH-006); current single-role
   `profiles.role` is sufficient for MVP.
+
+## 6. S2 update — multi-role (FR-AUTH-006) + hot indexes (code-complete)
+
+The following S2 code work is complete and committed. Staging verification
+(section 3) still requires a real Supabase project.
+
+### 6.1 Multi-role support (FR-AUTH-006)
+- [x] `AuthSession` carries `roles` (full set) + `role` (active); `canSwitchRole`
+      when >1 role; value-equality order-insensitive; `copyWith`.
+- [x] `AuthRepository.fetchRoles()` / `switchRole(role)` contract added.
+- [x] `SupabaseAuthDataSource.fetchRoles()` reads `user_roles` table (JWT-role
+      fallback for pre-migration projects).
+- [x] `SupabaseAuthDataSource.switchRole()` calls `switch_active_role` RPC.
+- [x] Use cases `FetchRoles` / `SwitchRole` + providers
+      `fetchRolesUseCaseProvider`, `switchRoleUseCaseProvider`,
+      `userRolesProvider`.
+- [x] `RoleSwitcherChip` (compact AppBar chip) + `RoleSwitcherDialog` (full
+      role list with radio + switch action). Hidden when single-role.
+- [x] 10 new tests: domain equality/canSwitchRole/copyWith + widget tests
+      (hidden when signed out, single-role label, multi-role swap icon).
+
+### 6.2 Database migrations
+- [x] `0010_hot_indexes.sql`: 7 critical indexes (idx_orders_status_placed,
+      idx_orders_idempotency, idx_orders_customer_placed, idx_menu_items_name_trgm,
+      idx_search_documents_name_trgm, idx_driver_locations_active,
+      idx_wallet_tx_created). Closes sprint-01-migration-audit §4.
+- [x] `0011_user_roles.sql`: `user_roles` table (user_id, role, is_active),
+      RLS (self read, admin all, no self-grant), `switch_active_role()` RPC,
+      `grant_signup_role()` trigger (auto-grants the signup role), backfill
+      from existing profiles.
+
+### 6.3 Still requiring staging (section 3)
+- [ ] Run `supabase db reset` with migrations 0001-0011 on a real project.
+- [ ] Verify the `switch_active_role` RPC updates the JWT claim on next
+      refresh (re-login required — JWTs are immutable until refreshed).
+- [ ] Confirm `pg_net` + `pg_cron` enabled on staging (dispatch trigger).
+- [ ] Set GUCs: `app.parefood_functions_base_url`, `app.supabase_service_role_key`.

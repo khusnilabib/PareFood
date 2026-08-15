@@ -446,4 +446,10 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {}
+
+  @override
+  Future<List<String>> fetchRoles() async => ['customer'];
+
+  @override
+  Future<void> switchRole(String role) async {}
 }

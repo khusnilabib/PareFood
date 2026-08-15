@@ -161,6 +161,57 @@ class SupabaseAuthDataSource {
     }
   }
 
+  /// Fetches every role the signed-in user holds (FR-AUTH-006, table
+  /// `user_roles`). Returns the active role first when possible.
+  Future<List<String>> fetchRoles() async {
+    try {
+      final rows = await _client
+          .from('user_roles')
+          .select('role, is_active')
+          .order('is_active', ascending: false)
+          .order('created_at', ascending: true);
+      final roles = <String>[];
+      for (final row in rows) {
+        final r = row['role'] as String?;
+        if (r != null && r.isNotEmpty && !roles.contains(r)) {
+          roles.add(r);
+        }
+      }
+      // Fallback: if no user_roles rows (e.g. pre-migration), use the JWT role.
+      if (roles.isEmpty) {
+        final session = _client.auth.currentSession;
+        final jwtRole =
+            session?.user.appMetadata['role'] as String? ?? 'customer';
+        roles.add(jwtRole);
+      }
+      return roles;
+    } on PostgrestException catch (e) {
+      throw PareServerException(
+        e.message.isEmpty ? 'Gagal memuat peran.' : e.message,
+        e,
+      );
+    }
+  }
+
+  /// Switches the active role to [role] (FR-AUTH-006). Calls the
+  /// `switch_active_role` RPC (migration 0011), which validates the user
+  /// holds the role, updates `user_roles.is_active`, and mirrors the role
+  /// into `profiles.role` → JWT claim.
+  Future<void> switchRole(String role) async {
+    try {
+      await _client.rpc<void>('switch_active_role', params: {'p_role': role});
+    } on PostgrestException catch (e) {
+      final msg = e.message.toLowerCase();
+      if (msg.contains('not held') || msg.contains('42501')) {
+        throw const PareAuthException('Role not available for this account.');
+      }
+      throw PareServerException(
+        e.message.isEmpty ? 'Gagal mengganti peran.' : e.message,
+        e,
+      );
+    }
+  }
+
   /// Ends the session (FR-AUTH-004).
   Future<void> signOut() async {
     try {
